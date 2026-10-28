@@ -1,0 +1,19 @@
+{
+  "name": "Janngude",
+  "short_name": "Janngude",
+  "description": "Révisez mieux, plus vite : grandes lignes, résumés, lectures audio, quiz et assistant à partir de vos cours.",
+  "lang": "fr",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#d9f0f5",
+  "theme_color": "#121212",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Écoute hors ligne", "url": "/offline.html" },
+    { "name": "Révisions du jour", "url": "/app/review" }
+  ]
+}

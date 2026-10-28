@@ -1,0 +1,201 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  --page: #d9f0f5;
+  --paper: #f4f4f4;
+  --surface: #ffffff;
+  --surface-2: #ededed;
+  --surface-3: #e1e1e1;
+  --ink: #121212;
+  --ink-2: #3b3b3b;
+  --muted: #7c7c7c;
+  --line: #e9e9e9;
+  --line-strong: #d4d4d4;
+  --primary: #121212;
+  --primary-strong: #000000;
+  --primary-soft: #d8f6dc;
+  --primary-ink: #1c5c35;
+  --accent: #e3b43a;
+  --accent-soft: #fdefc3;
+  --danger: #d2422a;
+  --danger-soft: #ffe1dc;
+  --success: #27823f;
+  --success-soft: #d8f6dc;
+  --info: #1b6f86;
+  --info-soft: #d6f0f6;
+  --mint: #d8f6dc;
+  --sky: #d6f0f6;
+  --lavender: #e6d4fb;
+  --lemon: #fdefc3;
+  --pink: #f8c8ef;
+  --violet: #f0c2fb;
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-ink: var(--primary-ink);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-mint: var(--mint);
+  --color-sky: var(--sky);
+  --color-lavender: var(--lavender);
+  --color-lemon: var(--lemon);
+  --color-pink: var(--pink);
+  --color-violet: var(--violet);
+
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-2xl: 28px;
+  --radius-3xl: 36px;
+
+  --shadow-card: 0 2px 12px rgb(18 18 18 / 0.05);
+  --shadow-float: 0 16px 40px -14px rgb(18 18 18 / 0.22), 0 2px 8px rgb(18 18 18 / 0.05);
+  --shadow-pop: 0 24px 64px -20px rgb(18 18 18 / 0.35), 0 4px 14px rgb(18 18 18 / 0.08);
+
+  --animate-fade-in: fade-in 0.35s ease-out both;
+  --animate-rise: rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-pulse-soft: pulse-soft 1.8s ease-in-out infinite;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+  html {
+    color-scheme: light;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--page);
+    color: var(--ink);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  }
+  ::selection {
+    background: var(--violet);
+    color: var(--ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+  button, [role="button"] {
+    cursor: pointer;
+  }
+  input::placeholder, textarea::placeholder {
+    color: color-mix(in oklab, var(--muted) 85%, white);
+  }
+}
+
+@utility font-display {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+/* Barre d’outils flottante (onglets du cours) */
+.dock-trigger .dock-label {
+  display: none;
+}
+.dock-trigger[data-state="active"] .dock-label {
+  display: inline;
+}
+.dock-trigger[data-state="active"] {
+  box-shadow: 0 0 0 3px rgb(255 255 255 / 0.9);
+}
+
+/* Prose pour les résumés / messages du chat */
+.prose-doc {
+  @apply prose prose-neutral max-w-none;
+  --tw-prose-body: var(--ink-2);
+  --tw-prose-headings: var(--ink);
+  --tw-prose-bold: var(--ink);
+  --tw-prose-links: var(--ink);
+  --tw-prose-bullets: var(--line-strong);
+  --tw-prose-counters: var(--muted);
+  --tw-prose-quotes: var(--ink-2);
+  --tw-prose-quote-borders: var(--violet);
+  --tw-prose-code: var(--ink);
+  --tw-prose-hr: var(--line);
+  --tw-prose-th-borders: var(--line-strong);
+  --tw-prose-td-borders: var(--line);
+}
+.prose-doc :where(h1, h2, h3) {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.prose-doc :where(h2) {
+  font-size: 1.45rem;
+  margin-top: 1.75em;
+}
+.prose-doc :where(h3) {
+  font-size: 1.15rem;
+}
+.prose-doc :where(code):not(pre code) {
+  background: var(--surface-2);
+  padding: 0.1em 0.4em;
+  border-radius: 8px;
+  font-weight: 500;
+}
+.prose-doc :where(code):not(pre code)::before,
+.prose-doc :where(code):not(pre code)::after {
+  content: none;
+}
+.prose-doc :where(pre) {
+  background: var(--ink);
+  border-radius: 16px;
+}
+.prose-doc :where(table) {
+  font-size: 0.925em;
+}
+
+@media print {
+  body { background: white; }
+  .no-print { display: none !important; }
+}

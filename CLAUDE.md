@@ -1,0 +1,51 @@
+@AGENTS.md
+
+# Janngude — espace de révision pour étudiants
+
+Application web (Next.js 16 + Supabase + Claude + ElevenLabs). Interface en **français**, identifiants de code en anglais.
+
+## Stack et règles Next.js 16
+
+- **Cache Components activé** : toute lecture dynamique (`cookies()`, `params`, `searchParams`, base de données) se fait dans un composant enfant enveloppé par `<Suspense>`. Les pages sont des coquilles statiques.
+- `usePathname()` / `useSearchParams()` côté client ⇒ envelopper dans `<Suspense>`.
+- Pas de `export const runtime`. `proxy.ts` remplace `middleware.ts`.
+- Types globaux `PageProps<"/route">`, `LayoutProps<"/route">`, `RouteContext<"/api/…">` (générés par `npx next typegen`).
+- Route handlers : toujours passer par `handleApiError` (relance les erreurs internes `NEXT_*`) ; les `GET` appellent `await connection()` pour sortir du prerender.
+- Règles React Compiler (lint) : pas de `setState` synchrone dans un `useEffect` ; pas de `Date.now()` / `Math.random()` pendant le rendu.
+
+## Serveur MCP Supabase
+
+`.mcp.json` déclare le serveur MCP hébergé de Supabase (`supabase`), limité au projet `mduajsgfisucshvqknmr`
+(URL `https://mcp.supabase.com/mcp?project_ref=…`). Authentification OAuth : `claude /mcp` dans un terminal,
+puis « supabase » → « Authenticate ». Une fois connecté, il permet d’appliquer les migrations SQL, de lire les tables,
+les journaux et la configuration Auth directement depuis Claude Code. Ajouter `&read_only=true` à l’URL pour un
+usage en lecture seule ; garder la confirmation manuelle des appels d’outils.
+
+## Données
+
+- Schéma dans `supabase/migrations/0001_init.sql` puis migrations numérotées suivantes, toutes idempotentes (RLS : chaque étudiant ne voit que ses lignes). Voix personnalisées : table `voices` (plusieurs par étudiant, plafond `MAX_VOICES_PER_USER`), routes `/api/voices` ; les colonnes `profiles.voice_id/voice_name` sont héritées et ne sont plus utilisées. Types manuels dans `src/lib/supabase/types.ts` — **à tenir synchronisés** avec le SQL.
+- Partages publics via les fonctions SQL `get_share`, `grade_shared_quiz`, `save_share`, `list_received_shares` (SECURITY DEFINER). Types partageables : résumé, quiz, audio, discussion et **cours complet** (`copy_shared_course` copie le cours dans l’espace du lecteur). Bucket `audio` public (chemins aléatoires), `courses` et `voices` privés.
+- Migration `0004_features.sql` : cartes mémoire (`flashcards`, SM-2 dans `src/lib/srs.ts`), examens blancs (`exams`), **groupes de classe** (`groups`, `group_members`, code d’invitation, `join_group`, `group_members_list`, `group_shares_list`, `group_leaderboard` ; `shares.group_id`), recherche plein texte (`courses.search`, `search_courses`), suivi d’usage (`usage_events`, `logUsage()` dans `src/lib/usage.ts`), rôles (`profiles.role`, `is_admin()`, `admin_overview`, `admin_users`, `admin_set_role`) et accueil (`profiles.onboarded_at`).
+- Migration `0005_phone_search.sql` : `profiles.phone` (normalisé `+221…` par `src/lib/phone.ts`, saisi à l’inscription via `user_metadata.phone` et dans Paramètres) et `search_students(q)` (nom, e-mail ou téléphone, 2 caractères minimum, soi-même exclu) utilisée par l’autocomplétion du partage (`StudentPicker`, route `/api/students/search`).
+- Espace admin `/admin` (`requireAdmin()`), suppression de comptes via `SUPABASE_SECRET_KEY`, état du quota ElevenLabs (`elevenSubscription()`). Premier admin : `update profiles set role='admin'` en SQL.
+- ElevenLabs renvoie **401 `quota_exceeded`** quand les crédits du mois sont épuisés : `elevenFetch` distingue ce cas d’une clé invalide.
+- Pas d’accueil ni de cours de démonstration (retirés à la demande du client) ; la colonne `profiles.onboarded_at` de la migration 0004 subsiste mais n’est plus utilisée.
+- Imports (`src/lib/extract.ts`) : PDF (unpdf, transcription Claude si scanné), Word (mammoth), PowerPoint (jszip, `## Diapositive N` + notes), images (Claude), audio (ElevenLabs Scribe `scribe_v1`, `transcribeAudio` dans `src/lib/tts.ts`). Dépôt multiple : un cours par fichier, analyses lancées en `fetch(..., { keepalive: true })`. YouTube : `/api/courses/import-youtube` (`youtube-transcript`, paragraphes horodatés, titre via oEmbed). Note audio : enregistrement micro (`src/lib/use-recorder.ts`).
+- E-mails d’authentification : si `SUPABASE_SECRET_KEY` et `RESEND_API_KEY` sont définies, `/api/auth/signup`, `/api/auth/forgot` et `/api/auth/resend-confirmation` génèrent les liens via `auth.admin.generateLink` et envoient via Resend (`src/lib/auth-mail.ts`) ; sinon les formulaires retombent sur l’envoi Supabase (503). Les liens aboutissent sur `/auth/confirm` (token_hash).
+- Session : `getCurrentUser()` / `requireUser()` (`src/lib/auth.ts`) côté serveur ; `requireApiUser()` dans les routes API.
+
+## IA
+
+- Modèle : `CLAUDE_MODEL` (défaut `claude-opus-5-5`). Sorties structurées via `zodOutputFormat` (analyse, quiz) ; streaming NDJSON pour résumés et chat (`ndjsonResponse` / `readNdjson`).
+- Prompts centralisés dans `src/lib/ai/prompts.ts`.
+- Clé ElevenLabs : `NEXT_ILEVENLABS_KEY` (sans `PUBLIC`, côté serveur uniquement). Modèle `ELEVENLABS_MODEL` (défaut `eleven_v4`, expressif : balises `[short pause]`, `[exhales]`…, pas de SSML `<break>`). Voix par défaut `ELEVENLABS_DEFAULT_VOICE_ID`.
+- Lecteur audio immersif (`src/components/audio/audio-player.tsx`) : sous-titres karaoké, texte complet synchronisé, sommaire cliquable et recherche avec autocomplétion. **Mode Parcœuriser** (apprentissage par cœur, bouton 🎓, mémorisé dans localStorage `janngude:learn-mode`) : la partie courante tourne en boucle (bornes = débuts de sections de la transcription) jusqu'à « Je maîtrise cette partie » (touche M), puis saut à la prochaine partie non maîtrisée ; parties validées par lecture dans `janngude:mastery:<id>` (`readMastery`/`saveMastery`, `src/lib/offline.ts`). Il lit la transcription JSON (`src/lib/transcript.ts`, mots horodatés via l’endpoint ElevenLabs `with-timestamps`) stockée à côté du MP3 (`<fichier>.json`, bucket `audio`). La narration (`narrateForSpeech`) renvoie des sections structurées qui servent de sommaire.
+- Lecture audio (`src/lib/tts.ts`) : PCM 24 kHz demandé par morceaux de 3 000 caractères avec `previous_text`/`next_text`, normalisation du niveau (`src/lib/audio.ts`, cible −15 dBFS, limiteur doux) puis encodage MP3 pur JS. Mode « narration naturelle » : le texte est d’abord réécrit en script oral par Claude (`src/lib/ai/narrate.ts`, prompt `SYSTEM_NARRATE`) ; mode « lecture fidèle » : `markdownToSpeech` avec pauses aux titres.
+
+## Design (maquette « tablette » pastel)
+
+- Page cyan clair (`page`), **cadre noir arrondi** (`DarkFrame`, `src/components/shell/app-shell.tsx`) avec barre de navigation sombre, puis **panneau clair** (`paper`) très arrondi. Encoche décorative noire en haut au centre.
+- Tokens dans `src/app/globals.css` : `ink` (noir, actions principales), pastels `mint`, `sky`, `lavender`, `lemon`, `pink`, `violet`. Police unique **Rubik** (`font-sans`) ; titres en `font-semibold tracking-tight` avec un emoji (`&nbsp;` avant l’emoji).
+- Formes : cartes `rounded-[28px] bg-surface shadow-card` sans bordure, boutons et champs en pilule (`rounded-full`), pastilles de statut pastel (« Prêt 👏 »), pastille icône en coin de carte (`CornerBubble`).
+- Page cours : onglets dans la **barre d’outils flottante** noire (`TabsDock` / `TabsDockTrigger`, un pastel par onglet). Onglet Écoute (`audio-panel.tsx`) : sources en **cartes radio** (icône pastel + durée estimée, carte active noire, podcast sur deux colonnes), réglages en lignes `SettingRow` (icône, libellé, aide, `Segmented` à droite, empilées sous `md`), barre de lancement noire avec l’estimation et le bouton blanc « Générer le MP3 ». Tableau de bord : tuiles Total / Prêts / En analyse, grille à plat filtrée par formation puis matière, colonne « Partagés avec moi » en cartes pastel (`SharedCard`).
+- Composants UI maison dans `src/components/ui` (Radix pour dialog, tabs, dropdown, tooltip). `cn()` dans `@/lib/utils`.
