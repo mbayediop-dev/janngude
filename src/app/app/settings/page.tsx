@@ -10,6 +10,7 @@ import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { ttsConfigured } from "@/lib/tts";
 import { maxVoicesPerUser } from "@/lib/voices";
+import { Khadija } from "@/components/brand/khadija";
 
 export const metadata: Metadata = { title: "Paramètres" };
 
@@ -55,7 +56,10 @@ async function Settings() {
             <CardDescription>Installez Janngude sur votre téléphone ou votre ordinateur : icône sur l’écran d’accueil, plein écran, écoute hors ligne.</CardDescription>
           </CardHeader>
           <CardContent>
-            <InstallAppButton variant="primary" showInstalled />
+            <div className="flex flex-wrap items-center gap-4">
+              <Khadija pose="install" className="h-28 w-28" />
+              <InstallAppButton variant="primary" showInstalled />
+            </div>
           </CardContent>
         </Card>
       </div>

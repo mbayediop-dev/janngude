@@ -4,6 +4,7 @@ import { Users, BookOpen, FileText, ListChecks, Headphones, MessagesSquare, User
 import { PageHeader, Progress, Skeleton } from "@/components/ui/misc";
 import { Badge } from "@/components/ui/badge";
 import { UsersTable } from "@/components/admin/users-table";
+import { Khadija } from "@/components/brand/khadija";
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { adminConfigured } from "@/lib/supabase/admin";
@@ -36,6 +37,7 @@ export default function AdminPage({ searchParams }: PageProps<"/admin">) {
         emoji="🛡️"
         description="Vue d’ensemble de la plateforme, consommation des services IA et gestion des comptes."
         eyebrow={<Badge tone="lemon">Réservé aux administrateurs</Badge>}
+        actions={<Khadija pose="admin" className="h-28 w-28 sm:-my-4" />}
       />
       <Suspense fallback={<Skeleton className="h-[560px] w-full rounded-[28px]" />}>
         <AdminContent searchParams={searchParams} />

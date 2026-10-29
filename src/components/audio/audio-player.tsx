@@ -2,11 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Dialog as D } from "radix-ui";
-import { Play, Pause, SkipBack, SkipForward, RotateCcw, RotateCw, X, Search, AlignLeft, ListTree, BookOpen, Loader2, GraduationCap, Repeat, Check, PartyPopper, ListRestart } from "lucide-react";
+import { Play, Pause, SkipBack, SkipForward, RotateCcw, RotateCw, X, Search, AlignLeft, ListTree, BookOpen, Loader2, GraduationCap, Repeat, Check, PartyPopper, ListRestart, ArrowLeft } from "lucide-react";
 import { cn, formatDuration } from "@/lib/utils";
-import { DomainIcon } from "@/components/dashboard/domain-icon";
 import { findWordIndex, type Transcript } from "@/lib/transcript";
 import { notifyPosition, readPosition, savePosition, readLearnMode, saveLearnMode, readMastery, saveMastery } from "@/lib/offline";
+import { Khadija } from "@/components/brand/khadija";
 
 export type PlayerTrack = {
   id: string;
@@ -320,8 +320,12 @@ function Player({ track, onClose }: { track: PlayerTrack; onClose: () => void })
       />
 
       <div className={cn("relative mx-auto flex min-h-dvh w-full flex-col px-4 py-5 sm:px-6", showText && data ? "max-w-[1480px]" : "max-w-6xl")}>
-        <div className="flex items-center justify-between">
-          <D.Title className="flex items-center gap-2 text-[13px] font-medium uppercase tracking-wider text-white/60">
+        {/* En-tête collé en haut du lecteur : bouton Retour et croix toujours visibles, même après défilement. */}
+        <div className="sticky top-0 z-20 -mx-4 -mt-5 flex items-center justify-between gap-3 bg-[#1b2328]/80 px-4 py-3 backdrop-blur-md sm:-mx-6 sm:px-6">
+          <D.Close className="inline-flex h-11 items-center gap-2 rounded-full bg-white/10 pl-3 pr-4 text-sm font-medium text-white transition-colors hover:bg-white/20" onClick={onClose}>
+            <ArrowLeft className="h-4 w-4" /> Retour
+          </D.Close>
+          <D.Title className="hidden items-center gap-2 text-[13px] font-medium uppercase tracking-wider text-white/60 sm:flex">
             <BookOpen className="h-4 w-4" /> Lecture du cours
           </D.Title>
           <D.Close className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20" aria-label="Fermer le lecteur" onClick={onClose}>
@@ -334,8 +338,9 @@ function Player({ track, onClose }: { track: PlayerTrack; onClose: () => void })
           <div className={cn("flex min-w-0 flex-col gap-5", playerOrder)}>
             <section className="rounded-[32px] border border-white/15 bg-white/10 p-6 shadow-pop backdrop-blur-2xl sm:p-8">
               <div className="flex items-start gap-5">
-                <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-[22px] bg-gradient-to-br from-mint via-sky to-lavender text-ink shadow-float sm:h-28 sm:w-28">
-                  <DomainIcon domain={track.domain ?? ""} className="h-10 w-10" />
+                {/* Khadija suit l’état de la lecture : casque en lecture, OK en pause, révision en mode Parcœuriser, fête quand tout est maîtrisé. */}
+                <div className="flex h-24 w-24 shrink-0 items-end justify-center overflow-hidden rounded-[22px] bg-gradient-to-br from-mint via-sky to-lavender shadow-float sm:h-28 sm:w-28">
+                  <Khadija pose={allMastered ? "cheer" : learn ? "study" : playing ? "headphones" : "ok"} className="h-[94%] w-[94%]" />
                 </div>
                 <div className="min-w-0 pt-1">
                   <h2 className="text-[26px] font-semibold leading-[1.1] tracking-tight sm:text-[34px] line-clamp-2">{track.title}</h2>
@@ -630,8 +635,14 @@ function TranscriptPanel({ data, wordIndex, flat, follow, onToggleFollow, onSeek
 
   useEffect(() => {
     if (!follow || activeParagraph < 0) return;
-    const el = containerRef.current?.querySelector<HTMLElement>(`[data-paragraph="${activeParagraph}"]`);
-    el?.scrollIntoView({ block: "center", behavior: "smooth" });
+    const container = containerRef.current;
+    const el = container?.querySelector<HTMLElement>(`[data-paragraph="${activeParagraph}"]`);
+    if (!container || !el) return;
+    // Défilement limité au panneau de texte : `scrollIntoView` ferait aussi défiler toute la fenêtre du lecteur
+    // (l’en-tête et le bouton Retour disparaissaient).
+    const delta = el.getBoundingClientRect().top - container.getBoundingClientRect().top;
+    const top = container.scrollTop + delta - container.clientHeight / 2 + el.offsetHeight / 2;
+    container.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
   }, [activeParagraph, follow]);
 
   // Index global (liste plate) du premier mot de chaque paragraphe.
@@ -655,7 +666,13 @@ function TranscriptPanel({ data, wordIndex, flat, follow, onToggleFollow, onSeek
           {follow ? "Suivi activé" : "Suivre la lecture"}
         </button>
       </div>
-      <div ref={containerRef} className="max-h-[52vh] space-y-4 overflow-y-auto pr-2 text-[16px] leading-relaxed scrollbar-thin xl:max-h-[calc(100dvh-12rem)]">
+      <div
+        ref={containerRef}
+        className="relative max-h-[52vh] space-y-4 overflow-y-auto pr-2 text-[16px] leading-relaxed scrollbar-thin xl:max-h-[calc(100dvh-12rem)]"
+        // Un défilement manuel (molette ou doigt) suspend le suivi : le bouton « Suivre la lecture » le réactive.
+        onWheel={() => follow && onToggleFollow()}
+        onTouchMove={() => follow && onToggleFollow()}
+      >
         {data.paragraphs.map((p, pi) => {
           const start = starts[pi];
           const section = p.heading ? data.sections[p.section] : null;

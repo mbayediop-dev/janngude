@@ -1,6 +1,13 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Application installée (PWA en mode autonome) : variante `standalone:` (en-tête figé au défilement). */
+@custom-variant standalone {
+  @media (display-mode: standalone) {
+    @slot;
+  }
+}
+
 :root {
   --page: #d9f0f5;
   --paper: #f4f4f4;

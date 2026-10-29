@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRight, FileText, Headphones, ListChecks, MessagesSquare, Share2, ListTree, UploadCloud, Sparkles, ShieldCheck, GraduationCap, Inbox, Settings, Search, Play } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
+import { Khadija, KhadijaFigure } from "@/components/brand/khadija";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/misc";
 import { InstallAppButton } from "@/components/pwa/install-button";
@@ -12,7 +13,7 @@ const FEATURES = [
   { icon: FileText, bg: "bg-sky", title: "Résumés à la demande", text: "Court, standard ou détaillé, avec une consigne si besoin. Export PDF propre, prêt à imprimer." },
   { icon: Headphones, bg: "bg-pink", title: "Lecture audio, avec votre voix", text: "Écoutez le cours ou un résumé en MP3, lu par la voix par défaut ou par votre propre voix enregistrée en une minute." },
   { icon: ListChecks, bg: "bg-lemon", title: "Quiz corrigés", text: "Des questions à choix multiples sur l’ensemble du cours, le niveau de votre choix, les bonnes réponses et leurs explications après l’épreuve." },
-  { icon: MessagesSquare, bg: "bg-lavender", title: "Un assistant qui connaît le cours", text: "Posez toutes vos questions : l’assistant répond à partir du contenu du cours et vous propose de vérifier votre compréhension." },
+  { icon: MessagesSquare, bg: "bg-lavender", title: "Khadija, l’assistante qui connaît le cours", text: "Posez toutes vos questions : Khadija répond à partir du contenu du cours et vous propose de vérifier votre compréhension." },
   { icon: Share2, bg: "bg-violet", title: "Partage en un clic", text: "Lien, WhatsApp, PDF ou MP3 : partagez un quiz, un résumé, une lecture ou une discussion, à des étudiants avec ou sans compte." },
 ];
 
@@ -54,7 +55,7 @@ export default function HomePage() {
                   Révisez l’essentiel. <span className="align-middle">🎓</span>
                 </h1>
                 <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-ink-2">
-                  Janngude lit vos cours, PDF, Word ou photos de notes, et en tire les grandes lignes, les informations à retenir, des résumés, une lecture audio avec votre voix, des quiz corrigés et un assistant qui répond à vos questions.
+                  Janngude lit vos cours, PDF, Word ou photos de notes, et en tire les grandes lignes, les informations à retenir, des résumés, une lecture audio avec votre voix, des quiz corrigés et Khadija, votre assistante, qui répond à vos questions.
                 </p>
                 <div className="mt-8 flex flex-wrap items-center gap-3">
                   <Button asChild size="lg">
@@ -100,12 +101,15 @@ export default function HomePage() {
               <h2 className="text-[34px] font-semibold leading-tight tracking-tight text-ink sm:text-[44px]">Trois étapes, et vous révisez</h2>
               <ol className="mt-12 grid gap-5 md:grid-cols-3">
                 {[
-                  { icon: UploadCloud, title: "Déposez", text: "Choisissez la formation et la matière, puis déposez votre cours (PDF, Word, texte ou photo de vos notes)." },
-                  { icon: Sparkles, title: "Laissez l’analyse se faire", text: "En quelques instants, votre espace affiche les grandes lignes et les informations à retenir." },
-                  { icon: ListChecks, title: "Révisez à votre façon", text: "Résumé, écoute, quiz ou questions à l’assistant : chaque outil se lance quand vous en avez besoin." },
+                  { icon: UploadCloud, pose: "upload" as const, title: "Déposez", text: "Choisissez la formation et la matière, puis déposez votre cours (PDF, Word, texte ou photo de vos notes)." },
+                  { icon: Sparkles, pose: "study" as const, title: "Laissez l’analyse se faire", text: "En quelques instants, votre espace affiche les grandes lignes et les informations à retenir." },
+                  { icon: ListChecks, pose: "headphones" as const, title: "Révisez à votre façon", text: "Résumé, écoute, quiz ou questions à Khadija : chaque outil se lance quand vous en avez besoin." },
                 ].map((s, i) => (
                   <li key={s.title} className="rounded-[28px] bg-surface p-7 shadow-card">
-                    <span className="text-[44px] font-semibold leading-none tracking-tight text-line-strong">{String(i + 1).padStart(2, "0")}</span>
+                    <div className="flex items-start justify-between gap-4">
+                      <span className="text-[44px] font-semibold leading-none tracking-tight text-line-strong">{String(i + 1).padStart(2, "0")}</span>
+                      <Khadija pose={s.pose} className="-mr-3 -mt-4 h-28 w-28" />
+                    </div>
                     <h3 className="mt-4 flex items-center gap-2 text-[20px] font-semibold text-ink">
                       <s.icon className="h-5 w-5" /> {s.title}
                     </h3>
@@ -120,6 +124,7 @@ export default function HomePage() {
               <div className="overflow-hidden rounded-[32px] bg-ink px-8 py-12 text-white sm:px-12 sm:py-16">
                 <div className="grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-center">
                   <div>
+                    <Khadija pose="friends" className="mb-4 h-36 w-36" />
                     <h2 className="text-[32px] font-semibold leading-tight tracking-tight sm:text-[42px]">Révisez à plusieurs, sans contrainte 🤝</h2>
                     <p className="mt-4 max-w-xl text-[16px] leading-relaxed text-white/75">
                       Un camarade sans compte ouvre votre quiz depuis WhatsApp et obtient son score. Un étudiant inscrit retrouve vos résumés dans sa rubrique « Partagés avec moi ». Les PDF et MP3 se téléchargent en un clic.
@@ -236,6 +241,12 @@ function ProductPreview() {
             </div>
           </div>
         </div>
+      </div>
+      {/* Khadija, la mascotte */}
+      <div className="relative z-10 -mt-6 ml-1 max-w-md sm:-ml-8 lg:-ml-14">
+        <KhadijaFigure layout="row" pose="laptop" size="md" bubbleClassName="shadow-float">
+          Moi, c’est Khadija ! Je lis vos cours et je réponds à vos questions, à toute heure.
+        </KhadijaFigure>
       </div>
     </div>
   );

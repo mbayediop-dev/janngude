@@ -9,6 +9,7 @@ import { Headphones, Download, Share2, Trash2, Play, Mic, Volume2, Captions, Boo
 import { Button } from "@/components/ui/button";
 import { Label, Select } from "@/components/ui/input";
 import { Segmented } from "@/components/ui/misc";
+import { VoicePreviewButton } from "@/components/settings/voice-preview-button";
 import { Badge } from "@/components/ui/badge";
 import { ShareDialog } from "@/components/share/share-dialog";
 import { apiJson, audioPublicUrl, readNdjson, transcriptPublicUrl } from "@/lib/client";
@@ -16,6 +17,8 @@ import { AudioPlayerDialog, type PlayerTrack } from "@/components/audio/audio-pl
 import { cn, formatDate, formatDuration } from "@/lib/utils";
 import type { AudioReadingRow, SummaryRow, OutlineSection, KeyPoint } from "@/lib/supabase/types";
 import { outlineToMarkdown, keyPointsToMarkdown } from "@/lib/compile";
+import { podcastBudget } from "@/lib/podcast-budget";
+import { Khadija } from "@/components/brand/khadija";
 
 type Source = "course" | "summary" | "outline" | "keypoints" | "podcast";
 type Language = "fr" | "en" | "wo";
@@ -131,8 +134,10 @@ export function AudioPanel({
     // « podcast » : le dialogue est écrit à partir du cours complet.
   }, [source, summaryId, summaries, courseText, outline, keyPoints]);
 
-  const tooLong = text.length > ttsMaxChars;
-  const minutes = Math.max(1, Math.round(text.length / 900));
+  // Le podcast est un dialogue borné par `podcastBudget` : la longueur du cours ne le bloque jamais.
+  const budget = podcastBudget(courseText.length, ttsMaxChars);
+  const tooLong = source !== "podcast" && text.length > ttsMaxChars;
+  const minutes = source === "podcast" ? budget.minutes : Math.max(1, Math.round(text.length / 900));
   const estimate = (chars: number) => `≈ ${Math.max(1, Math.round(chars / 900))} min`;
 
   // Cartes « Que lire ? » : icône, pastel et indication de durée par source.
@@ -145,9 +150,9 @@ export function AudioPanel({
       { value: "summary" as Source, label: "Un résumé", icon: FileText, bg: "bg-lavender", meta: summaries.length ? `${summaries.length} disponible${summaries.length > 1 ? "s" : ""} · ${estimate(stripMarkdown(summary?.content ?? "").length)}` : "Aucun résumé" },
       { value: "outline" as Source, label: "Grandes lignes", icon: ListTree, bg: "bg-lemon", meta: outline.length ? `${outline.length} partie${outline.length > 1 ? "s" : ""} · ${estimate(outlineChars)}` : "Indisponible" },
       { value: "keypoints" as Source, label: "À retenir", icon: Lightbulb, bg: "bg-pink", meta: keyPoints.length ? `${keyPoints.length} point${keyPoints.length > 1 ? "s" : ""} · ${estimate(keyChars)}` : "Indisponible" },
-      { value: "podcast" as Source, label: "Podcast à deux voix", icon: Radio, bg: "bg-mint", meta: "Dialogue enseignant / étudiant" },
+      { value: "podcast" as Source, label: "Podcast à deux voix", icon: Radio, bg: "bg-mint", meta: `Dialogue · ${estimate(budget.target)}` },
     ];
-  }, [summaries, summaryId, outline, keyPoints, courseText.length]);
+  }, [summaries, summaryId, outline, keyPoints, courseText.length, budget.target]);
 
   const voiceLabel = voiceChoice === "default" ? "Voix par défaut" : (voices.find((v) => v.id === voiceChoice)?.name ?? "Ma voix");
   const styleLabel = source === "podcast" ? "Podcast" : mode === "natural" ? "Narration naturelle" : "Lecture fidèle";
@@ -197,9 +202,7 @@ export function AudioPanel({
       <div className="min-w-0 space-y-4">
         <div className="relative rounded-[28px] bg-surface p-6 shadow-card sm:p-7">
           <div className="flex items-start gap-4">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-pink text-ink">
-              <Headphones className="h-5 w-5" />
-            </span>
+            <Khadija pose="headphones" className="-my-2 h-20 w-20" />
             <div className="min-w-0">
               <h2 className="text-[20px] font-semibold tracking-tight text-ink">Nouvelle lecture</h2>
               <p className="mt-0.5 text-sm text-muted">Un MP3 avec sous-titres synchronisés, à écouter partout et à partager.</p>
@@ -250,7 +253,12 @@ export function AudioPanel({
                 <p className="mt-3 rounded-2xl bg-lemon px-4 py-3 text-[13px] text-[#6b4d00]">Aucun résumé pour l’instant : générez-en un dans l’onglet Résumés, ou lisez les grandes lignes.</p>
               )
             ) : null}
-            {source === "podcast" ? <p className="mt-3 rounded-2xl bg-mint/60 px-4 py-3 text-[13px] text-primary-ink">Un dialogue écrit à partir du cours : l’enseignant (votre voix choisie) explique, l’étudiant (seconde voix) pose les questions.</p> : null}
+            {source === "podcast" ? (
+              <p className="mt-3 rounded-2xl bg-mint/60 px-4 py-3 text-[13px] text-primary-ink">
+                Un dialogue écrit à partir du cours : l’enseignant (votre voix choisie) explique, l’étudiant (seconde voix) pose les questions.
+                {budget.condensed ? " Le cours est long : le dialogue en condense l’essentiel, partie par partie." : ""}
+              </p>
+            ) : null}
           </div>
 
           {/* Réglages */}
@@ -273,6 +281,7 @@ export function AudioPanel({
                     })),
                   ]}
                 />
+                <VoicePreviewButton voiceId={voiceChoice === "default" ? "default" : voiceChoice} variant="outline" />
                 <Link href="/app/settings" className="inline-flex h-9 items-center gap-1 rounded-full px-3 text-[13px] font-medium text-ink-2 hover:bg-surface-2 hover:text-ink" title="Ajouter une voix dans Paramètres">
                   <Plus className="h-3.5 w-3.5" /> {voices.length ? "Gérer" : "Ajouter ma voix"}
                 </Link>
@@ -327,9 +336,12 @@ export function AudioPanel({
             generating && progress ? (
               <div className="mt-5 rounded-[22px] bg-ink p-5 text-white" aria-live="polite">
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-medium">
-                    {STAGE_LABEL[progress.stage]}
-                    {progress.detail ? <span className="text-white/60"> · morceau {progress.detail}</span> : null}
+                  <p className="flex items-center gap-3 text-sm font-medium">
+                    <Khadija pose={progress.stage === "narration" ? "study" : progress.stage === "synthesis" ? "microphone" : "headphones"} className="h-14 w-14" />
+                    <span>
+                      {STAGE_LABEL[progress.stage]}
+                      {progress.detail ? <span className="text-white/60"> · morceau {progress.detail}</span> : null}
+                    </span>
                   </p>
                   <span className="text-[24px] font-semibold tabular-nums">{progress.percent} %</span>
                 </div>
@@ -352,7 +364,7 @@ export function AudioPanel({
                     <>
                       <p className="text-[15px] font-semibold">≈ {minutes} min d’écoute</p>
                       <p className="truncate text-[12px] text-white/60">
-                        {text.length.toLocaleString("fr-FR")} caractères · {voiceLabel} · {styleLabel}
+                        {source === "podcast" ? `Dialogue ≈ ${budget.target.toLocaleString("fr-FR")} caractères, écrit à partir du cours (${courseText.length.toLocaleString("fr-FR")})` : `${text.length.toLocaleString("fr-FR")} caractères`} · {voiceLabel} · {styleLabel}
                         {source === "podcast" || mode === "natural" ? ` · ${languageLabel}` : ""}
                       </p>
                     </>

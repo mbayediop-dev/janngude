@@ -1,10 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CheckCircle2, XCircle, RotateCcw, Trophy } from "lucide-react";
+import { CheckCircle2, XCircle, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/misc";
+import { Khadija } from "@/components/brand/khadija";
 import type { GradeResult } from "@/lib/supabase/types";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
@@ -55,9 +56,7 @@ export function QuizRunner({
         <div className="rounded-[28px] bg-surface p-7 shadow-card">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <span className={cn("flex h-14 w-14 items-center justify-center rounded-2xl", pct >= 70 ? "bg-success-soft text-success" : pct >= 40 ? "bg-accent-soft text-[#7a4c00]" : "bg-danger-soft text-danger")}>
-                <Trophy className="h-7 w-7" />
-              </span>
+              <Khadija pose={pct >= 70 ? "trophy" : pct >= 40 ? "thumbsup" : "encourage"} className="h-24 w-24" />
               <div>
                 <p className="text-[32px] font-semibold leading-none tracking-tight text-ink">
                   {result.score} / {result.total}

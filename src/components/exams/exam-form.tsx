@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { TimerReset, Check, BookOpen } from "lucide-react";
+import { Check, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label, Input } from "@/components/ui/input";
 import { apiJson } from "@/lib/client";
 import { cn } from "@/lib/utils";
 import type { ExamRow, QuizDifficulty } from "@/lib/supabase/types";
+import { Khadija } from "@/components/brand/khadija";
 
 const DIFFICULTY_LABEL: Record<QuizDifficulty, string> = { easy: "Facile", medium: "Intermédiaire", hard: "Difficile" };
 
@@ -44,9 +45,7 @@ export function ExamForm({ courses }: { courses: { id: string; title: string; do
   return (
     <div className="rounded-[28px] bg-surface p-6 shadow-card sm:p-7">
       <div className="flex items-start gap-4">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-lemon text-ink">
-          <TimerReset className="h-5 w-5" />
-        </span>
+        <Khadija pose="timer" className="-my-2 h-20 w-20" />
         <div className="min-w-0">
           <h2 className="text-[20px] font-semibold tracking-tight text-ink">Nouvel examen blanc</h2>
           <p className="mt-0.5 text-sm text-muted">Les questions de chaque cours sont mélangées et chronométrées, avec un bilan par cours à la fin.</p>

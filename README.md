@@ -7,7 +7,7 @@ Espace de révision pour étudiants : déposez un cours (PDF, Word, PowerPoint, 
 - une **lecture audio** MP3 du cours, d’un résumé, des grandes lignes ou des points à retenir, en **narration naturelle** (script oral avec pauses et respirations, voix expressive Eleven v4, en français, anglais ou wolof) ou en lecture fidèle, ou en **podcast à deux voix**, avec la **voix par défaut** ou **vos propres voix** ; lecteur synchronisé (sous-titres, texte, sommaire, recherche), reprise de lecture et **écoute hors ligne** (PWA) ;
 - des **quiz** à choix multiples, corrigés et expliqués après l’épreuve, et des **examens blancs chronométrés** sur plusieurs cours ;
 - des **cartes mémoire** à répétition espacée (révisions du jour) ;
-- une **discussion** avec un assistant qui connaît le cours ;
+- une **discussion** avec **Khadija**, l’assistante (mascotte de l’application) qui connaît le cours ;
 - une **recherche globale** dans le contenu de tous les cours ;
 - le **partage** de tout cela, y compris d’un **cours complet** (lien public, WhatsApp, PDF, MP3, ajout direct dans l’espace d’un autre étudiant), consultable **avec ou sans compte**, des **groupes de classe** (code d’invitation, partage de contenus depuis la page du groupe, classement des quiz), et la **reprise d’une discussion partagée** dans son espace pour poser ses propres questions à l’assistant ;
 - un **espace administrateur** (`/admin`) : statistiques, consommation IA et voix, quota ElevenLabs, gestion des comptes ;

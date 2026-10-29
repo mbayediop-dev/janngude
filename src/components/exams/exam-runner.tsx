@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { apiJson } from "@/lib/client";
 import { cn, formatDuration } from "@/lib/utils";
 import type { ExamRow, GradeResult } from "@/lib/supabase/types";
+import { Khadija } from "@/components/brand/khadija";
 
 type Result = GradeResult & { byCourse: Record<string, { title: string; score: number; total: number }> };
 
@@ -98,7 +99,13 @@ export function ExamRunner({ exam }: { exam: ExamRow }) {
         footer={
           result ? (
             <div className="rounded-[28px] bg-surface p-6 shadow-card">
-              <h3 className="text-[18px] font-semibold text-ink">Bilan par cours</h3>
+              <div className="flex items-center gap-4">
+                <Khadija pose={result.score / Math.max(1, result.total) >= 0.7 ? "graduate" : "encourage"} className="h-24 w-24" />
+                <div>
+                  <h3 className="text-[18px] font-semibold text-ink">Bilan par cours</h3>
+                  <p className="text-sm text-muted">{result.score / Math.max(1, result.total) >= 0.7 ? "Examen réussi : continuez sur cette lancée." : "Reprenez les cours signalés, puis repassez l’examen."}</p>
+                </div>
+              </div>
               <ul className="mt-3 grid gap-2 sm:grid-cols-2">
                 {Object.values(result.byCourse).map((c) => {
                   const pct = Math.round((c.score / Math.max(1, c.total)) * 100);

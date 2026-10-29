@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Layers } from "lucide-react";
+
 import { Skeleton, PageHeader, EmptyState } from "@/components/ui/misc";
 import { Button } from "@/components/ui/button";
 import { ReviewSession, type ReviewCard } from "@/components/flashcards/review-session";
@@ -41,7 +41,7 @@ async function Session({ searchParams }: { searchParams: PageProps<"/app/review"
   if (!list.length) {
     return (
       <EmptyState
-        icon={<Layers />}
+        mascot={{ pose: "zen" }}
         title="Rien à réviser pour le moment"
         description="Toutes vos cartes sont à jour. Créez des cartes depuis l’onglet « Cartes » d’un cours, ou revenez demain."
         action={

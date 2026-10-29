@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ChevronRight, Copy, MessageCircle, Crown, UserMinus, LogOut, Trash2, Pencil, Trophy, Users, Share2, Inbox } from "lucide-react";
+import { ChevronRight, Copy, MessageCircle, Crown, UserMinus, LogOut, Trash2, Pencil, Users, Share2, Inbox } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -17,6 +17,7 @@ import { whatsappUrl } from "@/lib/share";
 import { groupInviteMessage } from "@/lib/groups";
 import { formatDate } from "@/lib/utils";
 import type { GroupLeaderboardRow, GroupMemberInfo, GroupRow, GroupShareInfo } from "@/lib/supabase/types";
+import { Khadija } from "@/components/brand/khadija";
 
 export function GroupView({ group, viewerId, members, shares, leaderboard }: { group: GroupRow; viewerId: string; members: GroupMemberInfo[]; shares: GroupShareInfo[]; leaderboard: GroupLeaderboardRow[] }) {
   const router = useRouter();
@@ -117,10 +118,13 @@ export function GroupView({ group, viewerId, members, shares, leaderboard }: { g
 
       {/* Invitation */}
       <div className="mb-10 flex flex-col gap-4 rounded-[28px] bg-lemon p-6 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-[12px] font-medium uppercase tracking-wider text-ink-2/70">Code d’invitation</p>
-          <p className="mt-1 font-mono text-[34px] font-semibold tracking-[0.3em] text-ink">{group.code}</p>
-          <p className="text-sm text-ink-2/80">Vos camarades le saisissent dans « Groupes » → « Rejoindre avec un code ».</p>
+        <div className="flex items-center gap-4">
+          <Khadija pose="phone" className="hidden h-28 w-28 shrink-0 sm:block" />
+          <div>
+            <p className="text-[12px] font-medium uppercase tracking-wider text-ink-2/70">Code d’invitation</p>
+            <p className="mt-1 font-mono text-[34px] font-semibold tracking-[0.3em] text-ink">{group.code}</p>
+            <p className="text-sm text-ink-2/80">Vos camarades le saisissent dans « Groupes » → « Rejoindre avec un code ».</p>
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="white" onClick={() => copyToClipboard(group.code, "Code copié")}>
@@ -168,8 +172,8 @@ export function GroupView({ group, viewerId, members, shares, leaderboard }: { g
 
         <aside className="space-y-8">
           <div>
-            <h2 className="mb-4 flex items-center gap-2 text-[22px] font-semibold tracking-tight text-ink">
-              <Trophy className="h-5 w-5" /> Classement des quiz
+            <h2 className="mb-4 flex items-center gap-3 text-[22px] font-semibold tracking-tight text-ink">
+              <Khadija pose="trophy" className="-my-2 h-14 w-14" /> Classement des quiz
             </h2>
             {ranked.length === 0 ? (
               <p className="rounded-[22px] bg-surface p-5 text-sm text-muted shadow-card">Partagez un quiz au groupe : les scores de chacun apparaîtront ici.</p>

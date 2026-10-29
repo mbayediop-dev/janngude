@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { ListChecks, Plus, Share2, Download, Trash2, ArrowLeft, Trophy } from "lucide-react";
+import { Plus, Share2, Download, Trash2, ArrowLeft, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
 import { Segmented, EmptyState } from "@/components/ui/misc";
@@ -12,6 +12,7 @@ import { QuizRunner } from "@/components/share/quiz-runner";
 import { apiJson } from "@/lib/client";
 import { cn, formatDate } from "@/lib/utils";
 import type { QuizRow, QuizDifficulty, GradeResult } from "@/lib/supabase/types";
+import { Khadija } from "@/components/brand/khadija";
 
 export type QuizWithAttempts = QuizRow & { attempts: { score: number; total: number; created_at: string }[] };
 
@@ -121,8 +122,8 @@ export function QuizPanel({ courseId, initialQuizzes }: { courseId: string; init
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
       <div className={cn("rounded-[28px] bg-surface p-7 shadow-card", !creating && "hidden lg:block")}>
-        <h2 className="flex items-center gap-2 text-base font-semibold text-ink">
-          <ListChecks className="h-4 w-4 text-ink" /> Nouveau quiz
+        <h2 className="flex items-center gap-3 text-base font-semibold text-ink">
+          <Khadija pose="tablet" className="-my-2 h-14 w-14" /> Nouveau quiz
         </h2>
         <p className="mt-1 text-sm text-muted">Des questions à choix multiples sur l’ensemble du cours, avec les bonnes réponses et leurs explications après l’épreuve.</p>
         <div className="mt-5 space-y-4">

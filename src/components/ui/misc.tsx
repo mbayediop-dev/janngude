@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cn, initials } from "@/lib/utils";
+import { Khadija, type KhadijaPose } from "@/components/brand/khadija";
 
 export function Skeleton({ className }: { className?: string }) {
   return <div className={cn("animate-pulse-soft rounded-2xl bg-surface-3", className)} aria-hidden />;
@@ -29,12 +30,15 @@ export function Progress({ value, className, tone = "primary" }: { value: number
 
 export function EmptyState({
   icon,
+  mascot,
   title,
   description,
   action,
   className,
 }: {
   icon?: React.ReactNode;
+  /** Khadija à la place de l’icône (humeur et accessoire selon le contexte). */
+  mascot?: { pose: KhadijaPose; bg?: "mint" | "sky" | "lavender" | "lemon" | "pink" | "violet" };
   title: string;
   description?: string;
   action?: React.ReactNode;
@@ -42,7 +46,8 @@ export function EmptyState({
 }) {
   return (
     <div className={cn("flex flex-col items-center justify-center rounded-[28px] border-2 border-dashed border-line-strong bg-surface/50 px-6 py-14 text-center", className)}>
-      {icon ? <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-mint text-primary-ink [&_svg]:h-6 [&_svg]:w-6">{icon}</div> : null}
+      {mascot ? <Khadija pose={mascot.pose} bg={mascot.bg ?? "none"} className="mb-3 h-36 w-36" /> : null}
+      {icon && !mascot ? <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-mint text-primary-ink [&_svg]:h-6 [&_svg]:w-6">{icon}</div> : null}
       <h3 className="text-[18px] font-semibold text-ink">{title}</h3>
       {description ? <p className="mt-1.5 max-w-sm text-sm text-muted">{description}</p> : null}
       {action ? <div className="mt-5">{action}</div> : null}

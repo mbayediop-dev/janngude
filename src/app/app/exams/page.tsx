@@ -6,6 +6,7 @@ import { Skeleton, PageHeader } from "@/components/ui/misc";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExamForm } from "@/components/exams/exam-form";
+import { Khadija } from "@/components/brand/khadija";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { cn, formatDate, formatDuration } from "@/lib/utils";
@@ -43,9 +44,7 @@ async function Content() {
         </h2>
         {list.length === 0 ? (
           <div className="rounded-[28px] bg-surface p-7 shadow-card">
-            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-lemon text-ink">
-              <TimerReset className="h-6 w-6" />
-            </span>
+            <Khadija pose="graduate" className="h-32 w-32" />
             <h3 className="mt-4 text-[20px] font-semibold tracking-tight text-ink">
               Votre premier examen blanc apparaîtra ici&nbsp;<span className="align-middle">🎯</span>
             </h3>

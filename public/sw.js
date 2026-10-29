@@ -9,7 +9,7 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(MEDIA_CACHE)
-      .then((cache) => cache.addAll([OFFLINE_URL, "/manifest.webmanifest", "/icon-192.png", "/icon-512.png"]))
+      .then((cache) => cache.addAll([OFFLINE_URL, "/manifest.webmanifest", "/icon-192.png", "/icon-512.png", "/khadija/headphones.png", "/khadija/offline.png"]))
       .catch(() => {})
       .then(() => self.skipWaiting()),
   );

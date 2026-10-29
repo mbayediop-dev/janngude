@@ -3,6 +3,7 @@ import { Rubik } from "next/font/google";
 import { Toaster } from "sonner";
 import { PwaRegister } from "@/components/pwa-register";
 import "./globals.css";
+import { Khadija } from "@/components/brand/khadija";
 
 const sans = Rubik({
   variable: "--font-sans",
@@ -40,9 +41,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Toaster
           position="top-center"
           closeButton
+          icons={{
+            success: <Khadija pose="ok" className="h-9 w-9" />,
+            error: <Khadija pose="oops" className="h-9 w-9" />,
+            info: <Khadija pose="idea" className="h-9 w-9" />,
+            warning: <Khadija pose="surprise" className="h-9 w-9" />,
+          }}
           toastOptions={{
             classNames: {
-              toast: "!rounded-2xl !border-0 !shadow-float !font-sans",
+              toast: "!rounded-2xl !border-0 !shadow-float !font-sans !items-center",
+              icon: "!h-9 !w-9 !my-0 !mr-1",
             },
           }}
         />

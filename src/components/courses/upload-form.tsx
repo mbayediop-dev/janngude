@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState, type DragEvent } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { UploadCloud, FileText, X, ArrowRight, Clapperboard, Mic, Square, Files, Music } from "lucide-react";
+import { FileText, X, ArrowRight, Clapperboard, Mic, Square, Files, Music } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { DOMAINS, subjectsFor } from "@/lib/domains";
 import { cn, formatBytes, formatDuration, slugify } from "@/lib/utils";
@@ -12,6 +12,7 @@ import { useRecorder, recordingFileName } from "@/lib/use-recorder";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/input";
 import { Segmented } from "@/components/ui/misc";
+import { Khadija } from "@/components/brand/khadija";
 
 const ACCEPT = ".pdf,.docx,.pptx,.txt,.md,.jpg,.jpeg,.png,.webp,.mp3,.m4a,.wav,.webm,.ogg,.mp4";
 const MAX_SIZE = 50 * 1024 * 1024;
@@ -250,9 +251,7 @@ export function UploadForm({ knownDomains, knownSubjects }: { knownDomains: stri
               )}
             >
               <input ref={inputRef} type="file" accept={ACCEPT} multiple className="sr-only" onChange={(e) => addFiles(e.target.files)} />
-              <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-mint text-ink">
-                <UploadCloud className="h-7 w-7" />
-              </span>
+              <Khadija pose="upload" className="mb-3 h-32 w-32" />
               <p className="text-[15px] font-medium text-ink">Glissez un ou plusieurs cours ici</p>
               <p className="mt-1 text-sm text-muted">ou cliquez pour choisir des fichiers</p>
               <p className="mt-4 text-[12px] text-muted">PDF, Word, PowerPoint, texte, photo de notes, audio (MP3, M4A, WAV) · 50 Mo max · {MAX_FILES} fichiers par dépôt</p>

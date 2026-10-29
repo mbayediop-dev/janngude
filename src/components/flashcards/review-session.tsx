@@ -3,13 +3,14 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { RotateCcw, Sparkles, ChevronRight, Check } from "lucide-react";
+import { RotateCcw, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/misc";
 import { apiJson } from "@/lib/client";
 import { cn } from "@/lib/utils";
 import { previewIntervals } from "@/lib/srs";
 import type { FlashcardRow } from "@/lib/supabase/types";
+import { Khadija, KhadijaFigure } from "@/components/brand/khadija";
 
 export type ReviewCard = FlashcardRow & { course_title?: string };
 
@@ -22,11 +23,20 @@ export function ReviewSession({ cards, title, backHref }: { cards: ReviewCard[];
   const [flipped, setFlipped] = useState(false);
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState<{ total: number; again: number }>({ total: 0, again: 0 });
+  const [lastGrade, setLastGrade] = useState<0 | 1 | 2 | 3 | null>(null);
 
   const card = queue[index];
   const intervals = useMemo(() => (card ? previewIntervals(card) : null), [card]);
   const finished = !card;
   const progress = queue.length ? (index / queue.length) * 100 : 100;
+  // Mot de Khadija selon l’étape : question, réponse, ou réaction à la dernière auto-évaluation.
+  const hint = flipped
+    ? { pose: "idea" as const, text: "Comment ça s’est passé ? Votre réponse fixe la prochaine date de révision de cette carte." }
+    : lastGrade === 0
+      ? { pose: "encourage" as const, text: "Pas grave : cette carte reviendra en fin de session. Carte suivante !" }
+      : lastGrade === 3
+        ? { pose: "thumbsup" as const, text: "Facile ! On enchaîne." }
+        : { pose: "think" as const, text: "Répondez dans votre tête, puis retournez la carte pour vous évaluer." };
 
   async function grade(g: 0 | 1 | 2 | 3) {
     if (!card || saving) return;
@@ -34,6 +44,7 @@ export function ReviewSession({ cards, title, backHref }: { cards: ReviewCard[];
     try {
       await apiJson(`/api/flashcards/${card.id}/review`, { method: "POST", body: JSON.stringify({ grade: g }) });
       setDone((d) => ({ total: d.total + 1, again: d.again + (g === 0 ? 1 : 0) }));
+      setLastGrade(g);
       // « Encore » : la carte revient en fin de session.
       if (g === 0) setQueue((q) => [...q, { ...card, repetitions: 0 }]);
       setFlipped(false);
@@ -48,10 +59,8 @@ export function ReviewSession({ cards, title, backHref }: { cards: ReviewCard[];
   if (finished) {
     return (
       <div className="mx-auto max-w-xl rounded-[28px] bg-surface p-8 text-center shadow-card">
-        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-mint text-ink">
-          <Check className="h-7 w-7" />
-        </span>
-        <h2 className="mt-5 text-[26px] font-semibold tracking-tight text-ink">Session terminée 🎉</h2>
+        <Khadija pose={done.again ? "thumbsup" : "cheer"} className="mx-auto h-40 w-40" />
+        <h2 className="mt-4 text-[26px] font-semibold tracking-tight text-ink">Session terminée 🎉</h2>
         <p className="mt-2 text-[15px] text-muted">
           {done.total ? `${done.total} carte${done.total > 1 ? "s" : ""} revue${done.total > 1 ? "s" : ""}${done.again ? `, dont ${done.again} à retravailler` : ""}.` : "Aucune carte à réviser pour le moment."} Les prochaines dates sont planifiées selon vos réponses.
         </p>
@@ -63,18 +72,23 @@ export function ReviewSession({ cards, title, backHref }: { cards: ReviewCard[];
   }
 
   return (
-    <div className="mx-auto max-w-2xl">
-      <div className="mb-5 flex items-center justify-between gap-4">
+    <div className="mx-auto max-w-[960px]">
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <p className="text-sm text-muted">
           {title} · carte {index + 1} / {queue.length}
         </p>
-        <Progress value={progress} className="max-w-48" />
+        <Progress value={progress} className="w-full sm:max-w-48" />
       </div>
 
+      <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_232px] md:items-start">
+        <div>
       {/* Carte : clic pour retourner */}
       <button
         type="button"
-        onClick={() => setFlipped((f) => !f)}
+        onClick={() => {
+          setFlipped((f) => !f);
+          setLastGrade(null);
+        }}
         className={cn(
           "relative block min-h-[320px] w-full rounded-[28px] p-8 text-left shadow-[0_22px_34px_-20px_rgb(18_18_18/0.45)] transition-transform duration-200 active:scale-[0.99] sm:p-10",
           flipped ? "bg-surface" : COLORS[index % COLORS.length],
@@ -116,11 +130,14 @@ export function ReviewSession({ cards, title, backHref }: { cards: ReviewCard[];
             </button>
           ))}
         </div>
-      ) : (
-        <p className="mt-6 flex items-center justify-center gap-2 text-[13px] text-muted">
-          <Sparkles className="h-4 w-4" /> Répondez dans votre tête, puis retournez la carte pour vous évaluer.
-        </p>
-      )}
+      ) : null}
+        </div>
+
+        {/* Khadija à côté de la carte : bulle au-dessus d’elle sur grand écran, à côté d’elle sur téléphone */}
+        <KhadijaFigure layout="auto" pose={hint.pose} size="md">
+          {hint.text}
+        </KhadijaFigure>
+      </div>
     </div>
   );
 }

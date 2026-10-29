@@ -313,3 +313,28 @@ export async function transcribeAudio(buffer: Buffer, mime: string, fileName = "
   // Paragraphes à partir des fins de phrases, pour une lecture et une analyse plus agréables.
   return text.replace(/([.!?…])\s+(?=[A-ZÀ-Ý])/g, "$1\n\n");
 }
+
+/** Phrase lue pour l’extrait d’une voix quand ElevenLabs n’en fournit pas (≈ 120 caractères, une seule fois par voix puis mise en cache). */
+export const VOICE_PREVIEW_TEXT = "Bonjour ! Je suis la voix qui lira vos cours sur Janngude… clairement, à votre rythme, pour que chaque notion reste en mémoire.";
+
+/**
+ * Extrait d’écoute d’une voix (MP3) : l’aperçu fourni par ElevenLabs pour cette voix si disponible,
+ * sinon une courte phrase synthétisée avec la voix.
+ */
+export async function voicePreview(voiceId: string): Promise<{ audio: Buffer; source: "elevenlabs" | "tts"; chars: number }> {
+  const info = await elevenFetch(`/voices/${encodeURIComponent(voiceId)}`, { method: "GET" })
+    .then((r) => r.json() as Promise<{ preview_url?: string | null }>)
+    .catch(() => null);
+  if (info?.preview_url) {
+    const res = await fetch(info.preview_url).catch(() => null);
+    if (res?.ok) return { audio: Buffer.from(await res.arrayBuffer()), source: "elevenlabs", chars: 0 };
+  }
+  const body: Record<string, unknown> = { text: VOICE_PREVIEW_TEXT, model_id: TTS_MODEL, voice_settings: voiceSettings("normal") };
+  if (TTS_MODEL !== "eleven_multilingual_v2") body.language_code = "fr";
+  const res = await elevenFetch(`/text-to-speech/${encodeURIComponent(voiceId)}?output_format=mp3_44100_64`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return { audio: Buffer.from(await res.arrayBuffer()), source: "tts", chars: VOICE_PREVIEW_TEXT.length };
+}

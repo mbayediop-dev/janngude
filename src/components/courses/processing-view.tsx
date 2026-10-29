@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Circle, Loader2, AlertTriangle, ArrowLeft } from "lucide-react";
+import { CheckCircle2, Circle, Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Khadija } from "@/components/brand/khadija";
 import { apiJson } from "@/lib/client";
 import { cn } from "@/lib/utils";
 import type { CourseStatus } from "@/lib/supabase/types";
@@ -81,9 +82,7 @@ export function ProcessingView({ courseId, title, status, errorMessage, autoTitl
       <div className="rounded-[28px] bg-surface p-8 shadow-float">
         {error ? (
           <>
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-danger-soft text-danger">
-              <AlertTriangle className="h-6 w-6" />
-            </span>
+            <Khadija pose="oops" className="h-32 w-32" />
             <h1 className="mt-5 text-[28px] font-semibold leading-tight tracking-tight text-ink">L’analyse n’a pas abouti</h1>
             <p className="mt-2 text-sm text-ink-2">{error}</p>
             <div className="mt-6 flex gap-2">
@@ -95,11 +94,9 @@ export function ProcessingView({ courseId, title, status, errorMessage, autoTitl
           </>
         ) : (
           <>
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-mint text-ink">
-              <Loader2 className="h-6 w-6 animate-spin" />
-            </span>
+            <Khadija pose="study" className="h-32 w-32" />
             <h1 className="mt-5 text-[28px] font-semibold leading-tight tracking-tight text-ink">Analyse de « {title} »</h1>
-            <p className="mt-2 text-sm text-muted">Quelques dizaines de secondes à quelques minutes selon la taille du document. Vous pouvez rester sur cette page.</p>
+            <p className="mt-2 text-sm text-muted">Khadija lit votre document : quelques dizaines de secondes à quelques minutes selon sa taille. Vous pouvez rester sur cette page.</p>
             <ol className="mt-7 space-y-3">
               {STEPS.map((step, i) => {
                 const done = i < currentStep;

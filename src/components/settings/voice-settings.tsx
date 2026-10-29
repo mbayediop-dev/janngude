@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { cn, formatDate, formatDuration } from "@/lib/utils";
+import { KhadijaFigure } from "@/components/brand/khadija";
+import { VoicePreviewButton } from "./voice-preview-button";
 
 const SAMPLE_TEXT =
   "Bonjour, je m’appelle … et j’utilise Janngude pour réviser mes cours. Cette application m’aide à comprendre l’essentiel, à m’entraîner avec des quiz et à écouter mes cours quand je suis en déplacement. Lire à voix haute, avec un rythme naturel, permet d’obtenir une voix fidèle.";
@@ -165,9 +167,12 @@ export function VoiceSettings({ voices, max, configured }: { voices: VoiceItem[]
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
-              <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/70 px-2.5 py-1 text-[11px] font-medium text-ink">
-                <Mic className="h-3 w-3" /> Choisissable dans « Voix » lors d’une lecture
-              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <VoicePreviewButton voiceId={v.id} />
+                <p className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-2.5 py-1 text-[11px] font-medium text-ink">
+                  <Mic className="h-3 w-3" /> Choisissable dans « Voix » lors d’une lecture
+                </p>
+              </div>
             </li>
           ))}
         </ul>
@@ -198,7 +203,12 @@ export function VoiceSettings({ voices, max, configured }: { voices: VoiceItem[]
               </Button>
             ) : null}
           </div>
-          <blockquote className="mt-4 rounded-[20px] bg-lavender/70 px-5 py-4 text-[16px] leading-relaxed text-ink">{SAMPLE_TEXT}</blockquote>
+          <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1fr)_200px] md:items-start">
+            <blockquote className="rounded-[20px] bg-lavender/70 px-5 py-4 text-[16px] leading-relaxed text-ink">{SAMPLE_TEXT}</blockquote>
+            <KhadijaFigure layout="auto" pose="microphone" size="sm">
+              Lisez ce texte à voix haute, d’une voix naturelle et posée : une minute suffit pour une voix fidèle.
+            </KhadijaFigure>
+          </div>
 
           <div className="mt-5 flex flex-wrap items-center gap-3">
             {!recording ? (

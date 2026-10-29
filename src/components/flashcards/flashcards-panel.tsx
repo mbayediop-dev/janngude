@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Layers, Trash2, Play, Pencil, Check, X } from "lucide-react";
+import { Trash2, Play, Pencil, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label, Textarea } from "@/components/ui/input";
 import { Segmented, EmptyState } from "@/components/ui/misc";
@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { apiJson } from "@/lib/client";
 import { cn, formatDate } from "@/lib/utils";
 import type { FlashcardRow } from "@/lib/supabase/types";
+import { Khadija } from "@/components/brand/khadija";
 
 const COLORS = ["bg-lemon", "bg-mint", "bg-sky", "bg-pink", "bg-lavender", "bg-violet"];
 
@@ -76,8 +77,8 @@ export function FlashcardsPanel({ courseId, initialCards, now }: { courseId: str
     <div className="space-y-6">
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
         <div className="rounded-[28px] bg-surface p-7 shadow-card">
-          <h2 className="flex items-center gap-2 text-base font-semibold text-ink">
-            <Layers className="h-4 w-4" /> Cartes mémoire
+          <h2 className="flex items-center gap-3 text-base font-semibold text-ink">
+            <Khadija pose="flashcards" className="-my-2 h-14 w-14" /> Cartes mémoire
           </h2>
           <p className="mt-1 text-sm text-muted">Des questions-réponses tirées du cours, à réviser par répétition espacée : chaque carte revient au bon moment selon vos réponses.</p>
           <div className="mt-5 space-y-4">
@@ -131,7 +132,7 @@ export function FlashcardsPanel({ courseId, initialCards, now }: { courseId: str
       </div>
 
       {cards.length === 0 ? (
-        <EmptyState icon={<Layers />} title="Aucune carte pour l’instant" description="Créez des cartes mémoire à partir du cours : elles reviendront au bon moment pour être mémorisées durablement." />
+        <EmptyState mascot={{ pose: "flashcards" }} title="Aucune carte pour l’instant" description="Créez des cartes mémoire à partir du cours : elles reviendront au bon moment pour être mémorisées durablement." />
       ) : (
         <div>
           <div className="mb-3 flex items-center justify-between">

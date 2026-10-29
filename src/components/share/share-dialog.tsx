@@ -13,6 +13,7 @@ import { apiJson, copyToClipboard } from "@/lib/client";
 import { shareMessage, whatsappUrl, SHARE_TYPE_LABEL } from "@/lib/share";
 import type { GroupSummary } from "@/lib/groups";
 import type { ShareResourceType, StudentMatch } from "@/lib/supabase/types";
+import { Khadija } from "@/components/brand/khadija";
 
 export type DownloadOption = { label: string; href: string; fileName?: string };
 
@@ -87,6 +88,7 @@ export function ShareDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent title={`Partager ce ${SHARE_TYPE_LABEL[type].toLowerCase()}`} description="Toute personne disposant du lien peut consulter ce contenu, avec ou sans compte.">
+        <Khadija pose="friends" className="mx-auto -mt-1 mb-3 h-24 w-24" />
         <div className="space-y-5">
           <div>
             <Label>Lien de partage</Label>

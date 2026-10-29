@@ -40,7 +40,7 @@ async function Library() {
     counts: { summaries: count(summaries, c.id), quizzes: count(quizzes, c.id), audios: count(audios, c.id), chats: count(chats, c.id) },
   }));
 
-  return <CourseLibrary courses={list} received={(received ?? []) as ReceivedShare[]} now={new Date().toISOString()} dueCards={dueCards ?? 0} />;
+  return <CourseLibrary courses={list} received={(received ?? []) as ReceivedShare[]} now={new Date().toISOString()} dueCards={dueCards ?? 0} firstName={user.name?.trim().split(/\s+/)[0] ?? null} />;
 }
 
 function LibrarySkeleton() {

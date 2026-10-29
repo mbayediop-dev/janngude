@@ -15,8 +15,8 @@ async function TopbarUser() {
 export function DarkFrame({ children, nav, user, bottom }: { children: React.ReactNode; nav?: React.ReactNode; user?: React.ReactNode; bottom?: React.ReactNode }) {
   return (
     <div className="min-h-dvh p-2 sm:p-4">
-      <div className="flex min-h-[calc(100dvh-1rem)] flex-col overflow-hidden rounded-[32px] bg-ink sm:min-h-[calc(100dvh-2rem)] sm:rounded-[40px]">
-        <header className="flex h-[68px] items-center justify-between gap-3 px-4 sm:h-[76px] sm:px-7">
+      <div className="flex min-h-[calc(100dvh-1rem)] flex-col overflow-hidden rounded-[32px] bg-ink standalone:overflow-clip sm:min-h-[calc(100dvh-2rem)] sm:rounded-[40px]">
+        <header className="flex h-[68px] items-center justify-between gap-3 px-4 standalone:sticky standalone:top-0 standalone:z-30 standalone:bg-ink sm:h-[76px] sm:px-7">
           <Logo href="/app" tone="light" className="shrink-0" />
           {nav}
           <div className="flex min-w-0 shrink-0 items-center justify-end">{user}</div>

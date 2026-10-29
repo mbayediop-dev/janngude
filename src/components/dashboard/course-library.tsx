@@ -3,9 +3,10 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, LayoutGrid, List, Bell, ArrowRight, Inbox, Brain } from "lucide-react";
+import { Search, LayoutGrid, List, Bell, ArrowRight, Inbox } from "lucide-react";
 import { cn, formatRelative } from "@/lib/utils";
 import { CornerBubble } from "@/components/ui/misc";
+import { Khadija, KhadijaFigure } from "@/components/brand/khadija";
 import { DomainIcon } from "./domain-icon";
 import { SharedCard } from "@/components/share/shared-card";
 import type { CourseStatus, ReceivedShare } from "@/lib/supabase/types";
@@ -22,7 +23,7 @@ export type LibraryCourse = {
   counts: { summaries: number; quizzes: number; audios: number; chats: number };
 };
 
-export function CourseLibrary({ courses, received, now, dueCards = 0 }: { courses: LibraryCourse[]; received: ReceivedShare[]; now: string; dueCards?: number }) {
+export function CourseLibrary({ courses, received, now, dueCards = 0, firstName }: { courses: LibraryCourse[]; received: ReceivedShare[]; now: string; dueCards?: number; firstName?: string | null }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [domain, setDomainState] = useState<string>("all");
@@ -59,6 +60,18 @@ export function CourseLibrary({ courses, received, now, dueCards = 0 }: { course
   };
   const featuredId = !query && domain === "all" && subject === "all" ? courses[0]?.id : undefined;
 
+  // Mot de Khadija selon la situation (le bandeau « Révisions du jour » et la bibliothèque vide ont déjà leur mascotte).
+  const processingCount = courses.filter((c) => c.status === "processing" || c.status === "uploaded").length;
+  const hello = firstName ? `Bonjour ${firstName} !` : "Bonjour !";
+  const greeting =
+    courses.length === 0
+      ? null
+      : processingCount > 0
+        ? { pose: "study" as const, text: `${hello} J’analyse ${processingCount} cours en ce moment : les grandes lignes arrivent.` }
+        : dueCards > 0
+          ? null
+          : { pose: "ok" as const, text: `${hello} Tout est à jour. Un quiz, une écoute ou une question sur un cours ?` };
+
   return (
     <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
       <div className="min-w-0">
@@ -82,12 +95,16 @@ export function CourseLibrary({ courses, received, now, dueCards = 0 }: { course
           </label>
         </div>
 
+        {greeting ? (
+          <KhadijaFigure layout="row" pose={greeting.pose} size="sm" className="mt-6 max-w-2xl">
+            {greeting.text}
+          </KhadijaFigure>
+        ) : null}
+
         {/* Révisions du jour */}
         {dueCards > 0 ? (
           <Link href="/app/review" className="mt-6 flex items-center gap-4 rounded-[24px] bg-lavender px-5 py-4 transition-transform hover:-translate-y-0.5">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/70 text-ink">
-              <Brain className="h-6 w-6" />
-            </span>
+            <Khadija pose="flashcards" className="-my-3 h-20 w-20" />
             <span className="min-w-0 flex-1">
               <span className="block text-[16px] font-semibold text-ink">
                 {dueCards} carte{dueCards > 1 ? "s" : ""} à réviser aujourd’hui
@@ -317,11 +334,9 @@ function CourseRow({ course, now }: { course: LibraryCourse; now: Date }) {
 function EmptyLibrary() {
   return (
     <div className="rounded-[28px] border-2 border-dashed border-line-strong bg-surface/50 px-6 py-14 text-center">
-      <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-mint text-ink">
-        <LayoutGrid className="h-6 w-6" />
-      </span>
+      <Khadija pose="books" className="mx-auto h-32 w-32" />
       <h3 className="mt-4 text-[20px] font-semibold text-ink">Déposez votre premier cours</h3>
-      <p className="mx-auto mt-1.5 max-w-md text-sm text-muted">PDF, Word, texte ou photo de vos notes : nous en tirons les grandes lignes, l’essentiel à retenir, des résumés, une lecture audio et des quiz.</p>
+      <p className="mx-auto mt-1.5 max-w-md text-sm text-muted">PDF, Word, texte ou photo de vos notes : Khadija en tire les grandes lignes, l’essentiel à retenir, des résumés, une lecture audio et des quiz.</p>
       <Link href="/app/courses/new" className="mt-6 inline-flex h-12 items-center gap-2 rounded-full bg-ink px-6 text-[15px] font-medium text-white hover:bg-black">
         Nouveau cours <ArrowRight className="h-4 w-4" />
       </Link>

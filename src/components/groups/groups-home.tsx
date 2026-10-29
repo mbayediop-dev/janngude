@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { CornerBubble } from "@/components/ui/misc";
+import { Khadija } from "@/components/brand/khadija";
 import { apiJson } from "@/lib/client";
 import { cn } from "@/lib/utils";
 import type { GroupSummary } from "@/lib/groups";
@@ -85,8 +86,8 @@ export function GroupsHome({ groups, initialCode }: { groups: GroupSummary[]; in
         </h2>
         {groups.length === 0 ? (
           <div className="rounded-[28px] border-2 border-dashed border-line-strong px-6 py-14 text-center">
-            <Users className="mx-auto h-7 w-7 text-muted" />
-            <p className="mt-3 text-[15px] font-medium text-ink">Vous n’êtes dans aucun groupe pour l’instant.</p>
+            <Khadija pose="friends" className="mx-auto h-32 w-32" />
+            <p className="mt-4 text-[15px] font-medium text-ink">Vous n’êtes dans aucun groupe pour l’instant.</p>
             <p className="mt-1 text-sm text-muted">Créez-en un pour votre classe ou rejoignez celui d’un camarade.</p>
           </div>
         ) : (

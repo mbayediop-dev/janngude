@@ -6,6 +6,7 @@ import { Download, Share, Smartphone, Monitor, CheckCircle2 } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { INSTALL_SERVER_SNAPSHOT, installSnapshot, parseInstallSnapshot, promptInstall, subscribeInstall, type InstallPlatform } from "@/lib/install";
+import { Khadija } from "@/components/brand/khadija";
 
 const STEPS: Record<InstallPlatform, { title: string; icon: React.ComponentType<{ className?: string }>; steps: string[]; note?: string }> = {
   ios: {
@@ -66,6 +67,7 @@ export function InstallAppButton({ variant = "secondary", size = "md", className
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent title="Installer Janngude" description="Gratuit, sans boutique d’applications : l’application s’ajoute à votre téléphone ou à votre ordinateur en quelques secondes, et l’écoute hors ligne devient disponible.">
+          <Khadija pose="install" className="mx-auto -mt-1 mb-3 h-28 w-28" />
           <div className="space-y-3">
             {order.map((p, i) => {
               const s = STEPS[p];

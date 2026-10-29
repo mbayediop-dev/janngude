@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { BookmarkPlus, Check, Copy, Download, MessageCircle, FileText, ListChecks, Headphones, MessagesSquare, Sparkles, UserRound, Play, BookOpen, FolderInput, Lightbulb, MessageSquarePlus } from "lucide-react";
+import { BookmarkPlus, Check, Copy, Download, MessageCircle, Sparkles, UserRound, Play, FolderInput, Lightbulb, MessageSquarePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Markdown } from "@/components/ui/markdown";
@@ -13,16 +13,14 @@ import { apiJson, audioPublicUrl, copyToClipboard, transcriptPublicUrl } from "@
 import { AudioPlayerDialog } from "@/components/audio/audio-player";
 import { shareMessage, whatsappUrl, SHARE_TYPE_LABEL } from "@/lib/share";
 import { formatDate, formatDuration } from "@/lib/utils";
-import type { GradeResult, SharePayload, ShareResourceType } from "@/lib/supabase/types";
+import type { GradeResult, SharePayload } from "@/lib/supabase/types";
+import { KhadijaFigure } from "@/components/brand/khadija";
 
 const SOURCE_LABEL: Record<string, string> = { course: "Lecture du cours", summary: "Lecture d’un résumé", outline: "Lecture des grandes lignes", keypoints: "Lecture des points à retenir", podcast: "Podcast à deux voix" };
-
-const ICONS: Record<ShareResourceType, React.ComponentType<{ className?: string }>> = { summary: FileText, quiz: ListChecks, audio: Headphones, chat: MessagesSquare, course: BookOpen };
 
 export function SharedView({ payload, viewer, url }: { payload: SharePayload; viewer: { id: string; name: string } | null; url: string }) {
   const router = useRouter();
   const { share, resource } = payload;
-  const Icon = ICONS[share.type];
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [copying, setCopying] = useState(false);
@@ -79,9 +77,6 @@ export function SharedView({ payload, viewer, url }: { payload: SharePayload; vi
     <div className="space-y-6">
       <header className="rounded-[28px] bg-surface p-6 shadow-card sm:p-8">
         <div className="flex items-start gap-4">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-mint text-ink">
-            <Icon className="h-6 w-6" />
-          </span>
           <div className="min-w-0 flex-1">
             <Badge tone="primary">{SHARE_TYPE_LABEL[share.type]}</Badge>
             <h1 className="mt-2 text-[30px] font-semibold leading-[1.1] tracking-tight text-ink sm:text-[36px]">{share.title}</h1>
@@ -90,6 +85,9 @@ export function SharedView({ payload, viewer, url }: { payload: SharePayload; vi
             </p>
           </div>
         </div>
+        <KhadijaFigure layout="row" pose="point" size="sm" className="mt-5 max-w-xl">
+          {viewer ? "Enregistrez ce contenu dans votre espace : vous le retrouverez dans « Partagés avec moi »." : "Créez votre espace gratuit pour enregistrer ce contenu et poser vos questions sur le cours."}
+        </KhadijaFigure>
         <div className="mt-6 flex flex-wrap gap-2">
           {viewer && share.type === "course" ? (
             <Button onClick={copyCourse} loading={copying}>

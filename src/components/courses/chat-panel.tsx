@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Plus, Send, Share2, Download, Trash2, MessagesSquare, Sparkles } from "lucide-react";
+import { Plus, Send, Share2, Download, Trash2, Sparkles } from "lucide-react";
+import { Khadija, KhadijaFigure } from "@/components/brand/khadija";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/input";
 import { Markdown } from "@/components/ui/markdown";
@@ -177,12 +178,11 @@ export function ChatPanel({ courseId, courseTitle, initialChats, initialChatId =
               <Spinner />
             </div>
           ) : messages.length === 0 && !draft ? (
-            <div className="flex h-full flex-col items-center justify-center py-8 text-center">
-              <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-mint text-ink">
-                <MessagesSquare className="h-6 w-6" />
-              </span>
-              <p className="text-base font-semibold text-ink">Posez toutes vos questions sur ce cours</p>
-              <p className="mt-1 max-w-sm text-sm text-muted">L’assistant répond à partir du contenu du cours et vous aide à vérifier votre compréhension.</p>
+            <div className="flex h-full flex-col items-center justify-center py-8">
+              <KhadijaFigure layout="row" pose="idea" size="md" className="w-full max-w-lg">
+                <p className="text-[15px] font-semibold text-ink">Bonjour, je suis Khadija&nbsp;👋</p>
+                <p className="mt-1 text-sm text-muted">Posez-moi toutes vos questions sur ce cours : je réponds à partir de son contenu et je vous aide à vérifier votre compréhension.</p>
+              </KhadijaFigure>
               <div className="mt-6 grid w-full max-w-lg gap-2 sm:grid-cols-2">
                 {suggestions.map((s) => (
                   <button key={s} type="button" onClick={() => send(s)} className="rounded-2xl bg-surface-2 px-4 py-3 text-left text-[13px] text-ink-2 transition-colors hover:bg-mint">
@@ -222,7 +222,7 @@ export function ChatPanel({ courseId, courseTitle, initialChats, initialChatId =
                 }
               }}
               rows={1}
-              placeholder="Votre question… (Entrée pour envoyer, Maj+Entrée pour un retour à la ligne)"
+              placeholder="Votre question à Khadija… (Entrée pour envoyer, Maj+Entrée pour un retour à la ligne)"
               className="min-h-10 max-h-40 resize-none border-0 bg-transparent shadow-none focus:ring-0"
               disabled={streaming}
             />
@@ -246,9 +246,7 @@ function Bubble({ role, content, pending }: { role: "user" | "assistant"; conten
   }
   return (
     <div className="flex gap-3">
-      <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-mint text-ink">
-        <Sparkles className="h-3.5 w-3.5" />
-      </span>
+      <Khadija pose="confident" bg="mint" className="mt-0.5 h-8 w-8" />
       <div className="min-w-0 max-w-[90%]">
         {content ? <Markdown content={content} className="prose-sm" /> : null}
         {pending ? <span className="ml-0.5 inline-block h-4 w-1.5 animate-pulse bg-primary align-middle" /> : null}

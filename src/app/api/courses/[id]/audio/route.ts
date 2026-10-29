@@ -52,7 +52,8 @@ export async function POST(req: Request, ctx: RouteContext<"/api/courses/[id]/au
     }
 
     const limit = ttsMaxChars();
-    if (text.length > limit) throw new ApiError(`Texte trop long pour une lecture (${text.length.toLocaleString("fr-FR")} caractères, limite ${limit.toLocaleString("fr-FR")}). Lisez un résumé.`);
+    // Le podcast est un dialogue écrit par Claude, borné par `podcastBudget` : la longueur du cours ne le bloque pas.
+    if (source !== "podcast" && text.length > limit) throw new ApiError(`Texte trop long pour une lecture (${text.length.toLocaleString("fr-FR")} caractères, limite ${limit.toLocaleString("fr-FR")}). Lisez un résumé.`);
     if (text.trim().length < 20) throw new ApiError("Rien à lire.");
 
     let voiceId: string | undefined;
@@ -79,7 +80,7 @@ export async function POST(req: Request, ctx: RouteContext<"/api/courses/[id]/au
           progress(2, "narration", "dialogue");
           let podcast;
           try {
-            podcast = await writePodcast({ text, title: course.title, domain: course.domain, subject: course.subject, language }, (f) => progress(2 + f * 33, "narration", "dialogue"));
+            podcast = await writePodcast({ text, title: course.title, domain: course.domain, subject: course.subject, language, maxChars: limit }, (f) => progress(2 + f * 33, "narration", "dialogue"));
           } catch (error) {
             throw new Error("Impossible d’écrire le podcast : " + describeAiError(error));
           }

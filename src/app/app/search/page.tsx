@@ -5,6 +5,7 @@ import { Search, ArrowRight, Tag, Lightbulb, Quote, Hash } from "lucide-react";
 import { Skeleton, PageHeader, EmptyState } from "@/components/ui/misc";
 import { Badge } from "@/components/ui/badge";
 import { DomainIcon } from "@/components/dashboard/domain-icon";
+import { Khadija } from "@/components/brand/khadija";
 import { RecentSearches, RememberSearch } from "@/components/search/recent-searches";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -86,10 +87,13 @@ async function Results({ searchParams }: { searchParams: PageProps<"/app/search"
             )}
           </div>
           <aside className="rounded-[28px] bg-surface p-6 shadow-card">
-            <h2 className="text-[17px] font-semibold tracking-tight text-ink">
-              Comment chercher&nbsp;<span className="align-middle">💡</span>
-            </h2>
-            <p className="mt-1 text-[13px] text-muted">
+            <div className="flex items-start justify-between gap-3">
+              <h2 className="text-[17px] font-semibold tracking-tight text-ink">
+                Comment chercher&nbsp;<span className="align-middle">💡</span>
+              </h2>
+              <Khadija pose="search" className="-mr-3 -mt-4 h-24 w-24 shrink-0" />
+            </div>
+            <p className="mt-2 text-[13px] text-muted">
               La recherche porte sur {readyCourses.length} cours analysé{readyCourses.length > 1 ? "s" : ""} : titres, texte intégral, résumés et points à retenir.
             </p>
             <ul className="mt-4 space-y-3">
@@ -112,7 +116,7 @@ async function Results({ searchParams }: { searchParams: PageProps<"/app/search"
           </aside>
         </div>
       ) : results.length === 0 ? (
-        <EmptyState icon={<Search />} title={`Aucun résultat pour « ${q} »`} description="Essayez un autre mot, au singulier, ou une notion plus générale. La recherche porte sur les cours analysés." />
+        <EmptyState mascot={{ pose: "think" }} title={`Aucun résultat pour « ${q} »`} description="Essayez un autre mot, au singulier, ou une notion plus générale. La recherche porte sur les cours analysés." />
       ) : (
         <>
           <p className="flex items-center gap-2 text-[13px] text-muted">

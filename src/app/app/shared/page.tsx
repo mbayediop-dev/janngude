@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Inbox } from "lucide-react";
+
 import { Skeleton, PageHeader, EmptyState } from "@/components/ui/misc";
 import { SharedCard } from "@/components/share/shared-card";
 import { requireUser } from "@/lib/auth";
@@ -29,7 +29,7 @@ async function SharedList() {
   if (shares.length === 0) {
     return (
       <EmptyState
-        icon={<Inbox />}
+        mascot={{ pose: "love" }}
         title="Rien pour l’instant"
         description="Quand un étudiant vous partage un contenu, ouvrez son lien connecté à votre compte ou demandez-lui de l’ajouter à votre espace via votre e-mail."
       />
