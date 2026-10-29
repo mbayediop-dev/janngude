@@ -9,6 +9,7 @@ import { Segmented, EmptyState } from "@/components/ui/misc";
 import { Markdown } from "@/components/ui/markdown";
 import { Badge } from "@/components/ui/badge";
 import { ShareDialog } from "@/components/share/share-dialog";
+import { KhadijaFigure } from "@/components/brand/khadija";
 import { readNdjson, apiJson } from "@/lib/client";
 import { cn, formatDate } from "@/lib/utils";
 import type { SummaryRow, SummaryLength } from "@/lib/supabase/types";
@@ -110,6 +111,15 @@ export function SummaryPanel({
             ))}
           </ul>
         ) : null}
+
+        {/* Khadija, sous la liste (grand écran) : conseil selon l’étape */}
+        <KhadijaFigure layout="column" pose={generating ? "study" : creating ? "idea" : "books"} size="md" className="hidden pt-6 lg:flex">
+          {generating
+            ? "Je rédige votre résumé : il s’affiche au fur et à mesure."
+            : creating
+              ? "Court pour réviser vite, standard pour l’essentiel, détaillé pour tout revoir. Ajoutez une consigne si vous voulez insister sur un point."
+              : "Ce résumé suit l’ordre du cours. Écoutez-le en MP3, puis testez-vous avec un quiz."}
+        </KhadijaFigure>
       </aside>
 
       {/* Contenu */}
@@ -190,7 +200,7 @@ export function SummaryPanel({
             </div>
           </article>
         ) : (
-          <EmptyState title="Aucun résumé" description="Générez un résumé à la longueur de votre choix." action={<Button onClick={() => setCreating(true)}>Nouveau résumé</Button>} />
+          <EmptyState mascot={{ pose: "study" }} title="Aucun résumé" description="Générez un résumé à la longueur de votre choix." action={<Button onClick={() => setCreating(true)}>Nouveau résumé</Button>} />
         )}
       </div>
     </div>
