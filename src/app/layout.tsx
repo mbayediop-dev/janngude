@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     "Déposez vos cours, obtenez les grandes lignes, un résumé, une lecture audio, des quiz et un assistant pour réviser. Partagez tout en un clic.",
   applicationName: "Janngude",
   manifest: "/manifest.webmanifest",
-  icons: { icon: "/icon-192.png", apple: "/icon-192.png" },
+  // Icônes : fichiers de convention dans src/app (icon.svg, icon.png, apple-icon.png, favicon.ico), générés à partir de LogoMark.
   appleWebApp: { capable: true, title: "Janngude", statusBarStyle: "black" },
   openGraph: { type: "website", locale: "fr_FR", siteName: "Janngude" },
 };

@@ -4,6 +4,7 @@ import { ArrowRight, FileText, Headphones, ListChecks, MessagesSquare, Share2, L
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/misc";
+import { InstallAppButton } from "@/components/pwa/install-button";
 import { getCurrentUser } from "@/lib/auth";
 
 const FEATURES = [
@@ -64,6 +65,7 @@ export default function HomePage() {
                   <Button asChild size="lg" variant="secondary">
                     <Link href="/login">J’ai déjà un compte</Link>
                   </Button>
+                  <InstallAppButton variant="ghost" size="lg" label="Installer l’application" className="max-w-full" />
                 </div>
                 <p className="mt-4 flex items-center gap-2 text-[13px] text-muted">
                   <ShieldCheck className="h-4 w-4" /> Vos cours restent privés. Vous choisissez ce que vous partagez.

@@ -10,7 +10,8 @@ Espace de révision pour étudiants : déposez un cours (PDF, Word, PowerPoint, 
 - une **discussion** avec un assistant qui connaît le cours ;
 - une **recherche globale** dans le contenu de tous les cours ;
 - le **partage** de tout cela, y compris d’un **cours complet** (lien public, WhatsApp, PDF, MP3, ajout direct dans l’espace d’un autre étudiant), consultable **avec ou sans compte**, des **groupes de classe** (code d’invitation, partage de contenus depuis la page du groupe, classement des quiz), et la **reprise d’une discussion partagée** dans son espace pour poser ses propres questions à l’assistant ;
-- un **espace administrateur** (`/admin`) : statistiques, consommation IA et voix, quota ElevenLabs, gestion des comptes.
+- un **espace administrateur** (`/admin`) : statistiques, consommation IA et voix, quota ElevenLabs, gestion des comptes ;
+- une interface **responsive** (barre de navigation en bas sur téléphone) et **installable** comme application sur téléphone (Android, iPhone) et ordinateur (Chrome, Edge, Safari), avec écoute hors ligne.
 
 ## Pile technique
 

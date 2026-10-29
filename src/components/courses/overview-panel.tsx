@@ -66,7 +66,7 @@ export function OverviewPanel({
 
       {/* Sélecteur : un seul des deux tableaux de post-it est affiché */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="inline-flex rounded-full bg-surface p-1 shadow-card" role="tablist" aria-label="Contenu de l’aperçu">
+        <div className="inline-flex max-w-full overflow-x-auto rounded-full bg-surface p-1 shadow-card scrollbar-thin" role="tablist" aria-label="Contenu de l’aperçu">
           <ViewTab active={view === "outline"} onClick={() => switchView("outline")} icon={<ListTree className="h-4 w-4" />} label="Grandes lignes" count={outline.length} />
           <ViewTab active={view === "keypoints"} onClick={() => switchView("keypoints")} icon={<Lightbulb className="h-4 w-4" />} label="À retenir" count={keyPoints.length} />
         </div>
@@ -99,7 +99,7 @@ function ViewTab({ active, onClick, icon, label, count }: { active: boolean; onC
       role="tab"
       aria-selected={active}
       onClick={onClick}
-      className={cn("inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm font-medium transition-colors", active ? "bg-ink text-white" : "text-ink-2 hover:text-ink")}
+      className={cn("inline-flex h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-3.5 text-sm font-medium transition-colors sm:px-4", active ? "bg-ink text-white" : "text-ink-2 hover:text-ink")}
     >
       {icon}
       {label}

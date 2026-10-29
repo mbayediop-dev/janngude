@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
+import { captureInstallPrompt } from "@/lib/install";
 
 /** Enregistre le service worker (écoute hors ligne, application installable) et vérifie ses mises à jour. */
 export function PwaRegister() {
   useEffect(() => {
+    captureInstallPrompt();
     if (!("serviceWorker" in navigator)) return;
     // Ancien cache de bundles JavaScript : on le supprime s’il subsiste (il servait des versions périmées).
     if ("caches" in window) {

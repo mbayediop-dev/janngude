@@ -109,25 +109,40 @@ async function AdminContent({ searchParams }: { searchParams: PageProps<"/admin"
         {kinds.length === 0 ? (
           <p className="rounded-[22px] bg-surface p-5 text-sm text-muted shadow-card">Aucune consommation enregistrée pour l’instant.</p>
         ) : (
-          <div className="overflow-hidden rounded-[26px] bg-surface shadow-card">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-surface-2 text-[12px] uppercase tracking-wider text-muted">
-                <tr>
-                  <th className="px-5 py-3 font-medium">Service</th>
-                  <th className="px-5 py-3 text-right font-medium">30 derniers jours</th>
-                  <th className="px-5 py-3 text-right font-medium">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {kinds.map((k) => (
-                  <tr key={k} className="border-t border-line">
-                    <td className="px-5 py-3 text-ink">{USAGE_LABEL[k] ?? k}</td>
-                    <td className="px-5 py-3 text-right tabular-nums text-ink">{(usage30[k] ?? 0).toLocaleString("fr-FR")}</td>
-                    <td className="px-5 py-3 text-right tabular-nums text-muted">{(usage[k] ?? 0).toLocaleString("fr-FR")}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="rounded-[26px] bg-surface p-2 shadow-card">
+            <div className="flex items-center justify-between px-4 py-2 text-[12px] font-medium uppercase tracking-wider text-muted">
+              <span>Service</span>
+              <span className="flex gap-6">
+                <span className="w-24 text-right">30 jours</span>
+                <span className="hidden w-24 text-right sm:inline">Total</span>
+              </span>
+            </div>
+            <ul className="space-y-1">
+              {kinds
+                .slice()
+                .sort((a, b) => (usage30[b] ?? 0) - (usage30[a] ?? 0))
+                .map((k, i) => {
+                  const month = usage30[k] ?? 0;
+                  const total = usage[k] ?? 0;
+                  const max = Math.max(1, ...kinds.map((x) => usage30[x] ?? 0));
+                  const tone = k.startsWith("tts") ? "bg-pink" : k.startsWith("ai_") ? "bg-lavender" : k.startsWith("stt") ? "bg-sky" : "bg-mint";
+                  return (
+                    <li key={k} className={`rounded-[18px] px-4 py-3 ${i % 2 ? "" : "bg-surface-2/60"}`}>
+                      <div className="flex items-center justify-between gap-4">
+                        <p className="min-w-0 truncate text-[14px] font-medium text-ink">{USAGE_LABEL[k] ?? k}</p>
+                        <p className="flex shrink-0 gap-6 text-[14px] tabular-nums">
+                          <span className="w-24 text-right font-semibold text-ink">{month.toLocaleString("fr-FR")}</span>
+                          <span className="hidden w-24 text-right text-muted sm:inline">{total.toLocaleString("fr-FR")}</span>
+                        </p>
+                      </div>
+                      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-2" aria-hidden>
+                        <div className={`h-full rounded-full ${tone}`} style={{ width: `${Math.max(2, Math.round((month / max) * 100))}%` }} />
+                      </div>
+                    </li>
+                  );
+                })}
+            </ul>
+            <p className="px-4 pb-2 pt-3 text-[12px] text-muted">Barres proportionnelles à la consommation des 30 derniers jours. Rose : synthèse vocale ElevenLabs · violet : Claude · bleu : transcription audio.</p>
           </div>
         )}
       </section>

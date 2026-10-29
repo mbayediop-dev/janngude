@@ -291,10 +291,11 @@ function SharedQuiz({ token, questions, viewerName }: { token: string; questions
   return (
     <div className="space-y-4">
       {!viewerName ? (
-        <label className="flex items-center gap-3 rounded-full bg-surface px-5 py-3 shadow-card">
-          <UserRound className="h-4 w-4 text-muted" />
-          <span className="text-sm text-muted">Votre prénom (facultatif)</span>
-          <input value={guest} onChange={(e) => setGuest(e.target.value)} className="flex-1 bg-transparent text-sm text-ink outline-none" placeholder="Pour que l’auteur sache qui a répondu" maxLength={60} />
+        <label className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-[22px] bg-surface px-5 py-3 shadow-card sm:rounded-full">
+          <span className="inline-flex items-center gap-2 whitespace-nowrap text-sm text-muted">
+            <UserRound className="h-4 w-4" /> Votre prénom (facultatif)
+          </span>
+          <input value={guest} onChange={(e) => setGuest(e.target.value)} className="min-w-[180px] flex-1 bg-transparent text-sm text-ink outline-none" placeholder="Pour que l’auteur sache qui a répondu" maxLength={60} />
         </label>
       ) : null}
       <QuizRunner questions={questions} onSubmit={submit} />

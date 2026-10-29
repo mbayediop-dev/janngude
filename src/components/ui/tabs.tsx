@@ -49,7 +49,8 @@ export function TabsDock({ className, ...props }: React.ComponentProps<typeof T.
   return (
     <T.List
       className={cn(
-        "fixed bottom-4 left-1/2 z-40 flex max-w-[calc(100vw-1.5rem)] -translate-x-1/2 items-center gap-2 overflow-x-auto rounded-full bg-ink p-2 shadow-pop scrollbar-thin",
+        // Sur téléphone, au-dessus de la barre de navigation flottante ; sur grand écran, en bas de la fenêtre.
+        "fixed bottom-[calc(5.25rem+env(safe-area-inset-bottom))] left-1/2 z-40 flex max-w-[calc(100vw-1.5rem)] -translate-x-1/2 items-center gap-2 overflow-x-auto rounded-full bg-ink p-2 shadow-pop scrollbar-thin md:bottom-4",
         className,
       )}
       {...props}
@@ -61,7 +62,7 @@ export function TabsDockTrigger({ className, color, icon, label, ...props }: Omi
   return (
     <T.Trigger
       className={cn(
-        "dock-trigger inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full px-3.5 text-ink transition-[box-shadow,transform] hover:-translate-y-0.5 data-[state=active]:px-5 [&_svg]:h-5 [&_svg]:w-5",
+        "dock-trigger inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full px-3 text-ink transition-[box-shadow,transform] hover:-translate-y-0.5 data-[state=active]:px-4 sm:px-3.5 sm:data-[state=active]:px-5 [&_svg]:h-5 [&_svg]:w-5",
         color,
         className,
       )}

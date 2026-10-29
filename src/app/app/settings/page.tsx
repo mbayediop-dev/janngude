@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ProfileForm } from "@/components/settings/profile-form";
 import { PasswordForm } from "@/components/settings/password-form";
 import { VoiceSettings } from "@/components/settings/voice-settings";
+import { InstallAppButton } from "@/components/pwa/install-button";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { ttsConfigured } from "@/lib/tts";
@@ -46,6 +47,15 @@ async function Settings() {
           </CardHeader>
           <CardContent>
             <PasswordForm email={user.email} />
+          </CardContent>
+        </Card>
+        <Card id="application" className="h-fit scroll-mt-6">
+          <CardHeader>
+            <CardTitle>Application</CardTitle>
+            <CardDescription>Installez Janngude sur votre téléphone ou votre ordinateur : icône sur l’écran d’accueil, plein écran, écoute hors ligne.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <InstallAppButton variant="primary" showInstalled />
           </CardContent>
         </Card>
       </div>

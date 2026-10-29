@@ -120,8 +120,8 @@ export function ChatPanel({ courseId, courseTitle, initialChats, initialChatId =
   ];
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
-      <aside className="space-y-2">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
+      <aside className="min-w-0 space-y-2">
         <Button variant={activeId ? "outline" : "primary"} className="w-full justify-start" onClick={startNewChat}>
           <Plus className="h-4 w-4" /> Nouvelle discussion
         </Button>
@@ -146,11 +146,11 @@ export function ChatPanel({ courseId, courseTitle, initialChats, initialChatId =
         ) : null}
       </aside>
 
-      <div className="flex min-h-[560px] flex-col rounded-[28px] bg-surface shadow-card">
-        <header className="flex items-center justify-between gap-3 border-b border-line px-5 py-3">
-          <p className="truncate text-sm font-medium text-ink">{active?.title ?? "Nouvelle discussion"}</p>
+      <div className="flex min-h-[560px] min-w-0 flex-col rounded-[28px] bg-surface shadow-card">
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3 sm:px-5">
+          <p className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{active?.title ?? "Nouvelle discussion"}</p>
           {active ? (
-            <div className="flex gap-2">
+            <div className="flex shrink-0 gap-2">
               <Button asChild variant="outline" size="sm">
                 <a href={`/api/export/pdf?type=chat&id=${active.id}`}>
                   <Download className="h-4 w-4" /> PDF
@@ -171,7 +171,7 @@ export function ChatPanel({ courseId, courseTitle, initialChats, initialChatId =
           ) : null}
         </header>
 
-        <div className="flex-1 space-y-5 overflow-y-auto px-5 py-5 scrollbar-thin">
+        <div className="min-w-0 flex-1 space-y-5 overflow-y-auto px-4 py-5 scrollbar-thin sm:px-5">
           {loadingMessages ? (
             <div className="flex justify-center py-10 text-muted">
               <Spinner />

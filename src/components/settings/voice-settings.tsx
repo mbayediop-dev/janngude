@@ -150,21 +150,24 @@ export function VoiceSettings({ voices, max, configured }: { voices: VoiceItem[]
     <div className="space-y-6">
       {/* Bibliothèque de voix */}
       {voices.length ? (
-        <ul className="space-y-2">
-          {voices.map((v) => (
-            <li key={v.id} className="flex items-center justify-between gap-4 rounded-[20px] bg-mint px-5 py-4">
-              <div className="flex min-w-0 items-center gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/70 text-ink">
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {voices.map((v, i) => (
+            <li key={v.id} className={cn("relative rounded-[22px] p-4", ["bg-mint", "bg-sky", "bg-lavender", "bg-lemon", "bg-pink"][i % 5])}>
+              <div className="flex items-start gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/80 text-ink">
                   <AudioLines className="h-5 w-5" />
                 </span>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-ink">{v.name}</p>
-                  <p className="text-[13px] text-ink-2/80">Ajoutée le {formatDate(v.created_at)} · disponible dans « Voix » lors d’une lecture.</p>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[15px] font-semibold text-ink">{v.name}</p>
+                  <p className="mt-0.5 text-[12px] text-ink-2/80">Ajoutée le {formatDate(v.created_at)}</p>
                 </div>
+                <Button variant="ghost" size="icon-sm" onClick={() => remove(v)} loading={deleting === v.id} aria-label={`Supprimer la voix ${v.name}`} title="Supprimer" className="-mr-1 -mt-1 shrink-0 text-ink/60 hover:bg-white/60 hover:text-danger">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => remove(v)} loading={deleting === v.id}>
-                <Trash2 className="h-4 w-4" /> Supprimer
-              </Button>
+              <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/70 px-2.5 py-1 text-[11px] font-medium text-ink">
+                <Mic className="h-3 w-3" /> Choisissable dans « Voix » lors d’une lecture
+              </p>
             </li>
           ))}
         </ul>
@@ -172,7 +175,7 @@ export function VoiceSettings({ voices, max, configured }: { voices: VoiceItem[]
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-[13px] text-muted">
-          {voices.length} / {max} voix enregistrée{voices.length > 1 ? "s" : ""}.
+          {voices.length > max ? `${voices.length} voix enregistrées (limite : ${max}).` : `${voices.length} / ${max} voix enregistrée${voices.length > 1 ? "s" : ""}.`}
         </p>
         {!adding ? (
           <Button variant={full ? "outline" : "primary"} size="sm" onClick={() => !full && setAdding(true)} disabled={full} title={full ? "Supprimez une voix pour en ajouter une nouvelle" : undefined}>

@@ -56,7 +56,7 @@ export function ExamRunner({ exam }: { exam: ExamRow }) {
           <li>• Cours : {Array.from(new Set(exam.questions.map((q) => q.course_title))).join(", ")}</li>
           <li>• À la fin du temps, les réponses sont envoyées automatiquement</li>
         </ul>
-        <div className="mt-6 flex gap-2">
+        <div className="mt-6 flex flex-wrap gap-2">
           <Button
             size="lg"
             onClick={() => {

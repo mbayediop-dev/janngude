@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronDown, LogOut, Settings, ShieldCheck, TimerReset, Search, Headphones } from "lucide-react";
+import { ChevronDown, LogOut, Settings, ShieldCheck, TimerReset, Search, Headphones, Download } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Avatar } from "@/components/ui/misc";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -62,6 +62,11 @@ export function UserMenu({ name, email, avatarUrl, isAdmin = false }: { name: st
           <a href="/offline.html">
             <Headphones /> Écoute hors ligne
           </a>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/app/settings#application">
+            <Download /> Installer l’application
+          </Link>
         </DropdownMenuItem>
         {isAdmin ? (
           <DropdownMenuItem asChild>

@@ -23,6 +23,14 @@ type Mode = "natural" | "faithful";
 type Pace = "slow" | "normal" | "fast";
 type Stage = "narration" | "synthesis" | "encoding" | "upload";
 
+const SOURCE_META: Record<Source, { label: string; icon: React.ComponentType<{ className?: string }>; bg: string }> = {
+  course: { label: "Cours complet", icon: BookOpen, bg: "bg-sky" },
+  summary: { label: "Résumé", icon: FileText, bg: "bg-lavender" },
+  outline: { label: "Grandes lignes", icon: ListTree, bg: "bg-lemon" },
+  keypoints: { label: "À retenir", icon: Lightbulb, bg: "bg-pink" },
+  podcast: { label: "Podcast à deux voix", icon: Radio, bg: "bg-mint" },
+};
+
 const STAGE_LABEL: Record<Stage, string> = {
   narration: "Rédaction du script",
   synthesis: "Synthèse vocale",
@@ -403,51 +411,71 @@ export function AudioPanel({
           <ul className="space-y-3">
             {audios.map((a) => {
               const url = audioPublicUrl(a.file_path);
+              const meta = SOURCE_META[a.source] ?? SOURCE_META.course;
+              const position = positionOf(a.id);
+              const progress = position > 0 && a.duration_seconds ? Math.min(100, Math.round((position / a.duration_seconds) * 100)) : 0;
+              const voiceName = a.voice_label ?? (a.voice_kind === "custom" ? "Ma voix" : "Voix par défaut");
               return (
-                <li key={a.id} className="rounded-[22px] bg-surface p-5 shadow-card">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="flex min-w-0 items-start gap-3">
-                      <button
-                        type="button"
-                        onClick={() => openPlayer(a)}
-                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ink text-white transition-transform hover:scale-105"
-                        aria-label={`Écouter : ${a.title}`}
-                      >
-                        <Play className="ml-0.5 h-5 w-5" />
-                      </button>
-                      <div className="min-w-0">
-                      <p className="truncate text-[15px] font-medium text-ink">{a.title}</p>
-                      <p className="mt-1 flex flex-wrap items-center gap-2 text-[12px] text-muted">
-                        <Badge tone={a.voice_kind === "custom" ? "accent" : "neutral"}>{a.voice_label ?? (a.voice_kind === "custom" ? "Ma voix" : "Voix par défaut")}</Badge>
-                        {a.duration_seconds ? <span>{formatDuration(a.duration_seconds)}</span> : null}
-                        <span>· {formatDate(a.created_at)}</span>
-                        <span className="inline-flex items-center gap-1"><Captions className="h-3.5 w-3.5" /> sous-titres</span>
-                        {positionOf(a.id) > 0 ? <span className="font-medium text-ink">· Reprendre à {formatDuration(positionOf(a.id))}</span> : null}
+                <li key={a.id} className="rounded-[24px] bg-surface p-4 shadow-card sm:p-5">
+                  <div className="flex items-start gap-4">
+                    <button
+                      type="button"
+                      onClick={() => openPlayer(a)}
+                      className={cn("flex h-16 w-16 shrink-0 items-center justify-center rounded-[20px] transition-transform hover:scale-[1.04] active:scale-95", meta.bg)}
+                      aria-label={`Écouter : ${a.title}`}
+                    >
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-white shadow-card">
+                        <Play className="ml-0.5 h-4 w-4" />
+                      </span>
+                    </button>
+                    <div className="min-w-0 flex-1">
+                      <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted">
+                        <meta.icon className="h-3.5 w-3.5" /> {meta.label}
                       </p>
-                      </div>
+                      <p className="mt-1 truncate text-[15px] font-semibold text-ink">{a.title}</p>
+                      <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-muted">
+                        <Badge tone={a.voice_kind === "custom" ? "lemon" : "neutral"}>
+                          {a.voice_kind === "custom" ? <Mic className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />} {voiceName}
+                        </Badge>
+                        {a.duration_seconds ? <span className="tabular-nums">{formatDuration(a.duration_seconds)}</span> : null}
+                        <span>· {formatDate(a.created_at)}</span>
+                        <span className="inline-flex items-center gap-1">
+                          <Captions className="h-3.5 w-3.5" /> sous-titres
+                        </span>
+                      </p>
+                      {progress > 0 ? (
+                        <div className="mt-2.5 flex items-center gap-2">
+                          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-2" aria-hidden>
+                            <div className="h-full rounded-full bg-ink" style={{ width: `${progress}%` }} />
+                          </div>
+                          <button type="button" onClick={() => openPlayer(a)} className="shrink-0 text-[12px] font-medium text-ink hover:underline">
+                            Reprendre à {formatDuration(position)}
+                          </button>
+                        </div>
+                      ) : null}
                     </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      <OfflineButton track={{ id: a.id, title: a.title, subtitle: `${courseTitle} · ${a.voice_label ?? "Voix par défaut"}`, src: url, transcriptUrl: transcriptPublicUrl(a.file_path), domain: courseDomain, durationSeconds: a.duration_seconds }} />
-                      <Button asChild variant="outline" size="sm">
-                        <a href={url} download={`${a.title}.mp3`}>
-                          <Download className="h-4 w-4" /> MP3
-                        </a>
-                      </Button>
-                      <ShareDialog
-                        type="audio"
-                        id={a.id}
-                        title={a.title}
-                        downloads={[{ label: "MP3", href: url, fileName: `${a.title}.mp3` }]}
-                        trigger={
-                          <Button size="sm">
-                            <Share2 className="h-4 w-4" /> Partager
-                          </Button>
-                        }
-                      />
-                      <Button variant="ghost" size="icon-sm" onClick={() => remove(a.id)} aria-label="Supprimer">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                  </div>
+                  <div className="mt-3 flex flex-wrap items-center gap-1.5 sm:pl-20">
+                    <OfflineButton track={{ id: a.id, title: a.title, subtitle: `${courseTitle} · ${voiceName}`, src: url, transcriptUrl: transcriptPublicUrl(a.file_path), domain: courseDomain, durationSeconds: a.duration_seconds }} />
+                    <Button asChild variant="outline" size="sm">
+                      <a href={url} download={`${a.title}.mp3`}>
+                        <Download className="h-4 w-4" /> MP3
+                      </a>
+                    </Button>
+                    <ShareDialog
+                      type="audio"
+                      id={a.id}
+                      title={a.title}
+                      downloads={[{ label: "MP3", href: url, fileName: `${a.title}.mp3` }]}
+                      trigger={
+                        <Button size="sm">
+                          <Share2 className="h-4 w-4" /> Partager
+                        </Button>
+                      }
+                    />
+                    <Button variant="ghost" size="icon-sm" onClick={() => remove(a.id)} aria-label="Supprimer" className="ml-auto text-muted hover:text-danger">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </li>
               );
