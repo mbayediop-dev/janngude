@@ -1,7 +1,7 @@
 # Base de données Supabase
 
 1. Ouvrez votre projet Supabase → **SQL Editor** → **New query**.
-2. Collez le contenu de `migrations/0001_init.sql` et exécutez-le, puis faites de même, **dans l’ordre**, avec chaque migration suivante : `0002_audio_sources.sql` (lectures des grandes lignes et points à retenir), `0003_voices.sql` (plusieurs voix par étudiant), `0004_features.sql` (cartes mémoire, examens, groupes, recherche, suivi d’usage, rôles, accueil), `0005_phone_search.sql` (téléphone sur le profil, recherche d’étudiants pour le partage). Les scripts sont idempotents.
+2. Collez le contenu de `migrations/0001_init.sql` et exécutez-le, puis faites de même, **dans l’ordre**, avec chaque migration suivante : `0002_audio_sources.sql` (lectures des grandes lignes et points à retenir), `0003_voices.sql` (plusieurs voix par étudiant), `0004_features.sql` (cartes mémoire, examens, groupes, recherche, suivi d’usage, rôles, accueil), `0005_phone_search.sql` (téléphone sur le profil, recherche d’étudiants pour le partage), `0006_shared_chat.sql` (reprise d’une discussion partagée, copies de cours sans doublon). Les scripts sont idempotents.
 3. Dans **Authentication → URL Configuration**, ajoutez `http://localhost:3000/auth/callback`
    (et l’URL de production) dans *Redirect URLs*.
 4. (Optionnel) **Authentication → Providers → Email** : désactivez *Confirm email*

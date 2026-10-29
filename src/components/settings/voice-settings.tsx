@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Mic, Square, Upload, Trash2, Play, Plus, AudioLines } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -88,10 +89,23 @@ export function VoiceSettings({ voices, max, configured }: { voices: VoiceItem[]
     if (!blob) return;
     setSaving(true);
     try {
-      const form = new FormData();
-      form.append("name", name.trim() || "Ma voix");
-      form.append("file", blob, blobName);
-      const res = await fetch("/api/voices", { method: "POST", body: form });
+      // L’échantillon part directement dans le bucket privé « voices » (dossier de l’utilisateur) : les fonctions
+      // serveur (Vercel) limitent le corps des requêtes à 4,5 Mo. La route ne reçoit ensuite que le chemin.
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Session expirée, reconnectez-vous.");
+      const ext = blobName.includes(".") ? blobName.slice(blobName.lastIndexOf(".")).toLowerCase() : ".webm";
+      const samplePath = `${user.id}/${crypto.randomUUID()}${ext}`;
+      const mime = blob.type || "audio/webm";
+      const { error: uploadError } = await supabase.storage.from("voices").upload(samplePath, blob, { contentType: mime, upsert: false });
+      if (uploadError) throw new Error(`Échec de l’envoi de l’échantillon (${uploadError.message}).`);
+      const res = await fetch("/api/voices", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim() || "Ma voix", samplePath, fileName: blobName, mime }),
+      });
       const data = (await res.json()) as { error?: string };
       if (!res.ok) throw new Error(data.error ?? "Erreur");
       toast.success("Voix ajoutée. Elle est disponible pour vos lectures.");

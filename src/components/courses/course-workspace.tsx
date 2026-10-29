@@ -38,6 +38,7 @@ export function CourseWorkspace({
   tts,
   ttsMaxChars,
   initialTab = "overview",
+  initialChatId = null,
 }: {
   course: WorkspaceCourse;
   summaries: SummaryRow[];
@@ -50,6 +51,7 @@ export function CourseWorkspace({
   tts: boolean;
   ttsMaxChars: number;
   initialTab?: WorkspaceTab;
+  initialChatId?: string | null;
 }) {
   const router = useRouter();
   const [tab, setTab] = useState<WorkspaceTab>(initialTab);
@@ -191,7 +193,7 @@ export function CourseWorkspace({
           <QuizPanel courseId={course.id} initialQuizzes={quizzes} />
         </TabsContent>
         <TabsContent value="chat" keepMounted>
-          <ChatPanel courseId={course.id} courseTitle={course.title} initialChats={chats} keywords={course.keywords ?? []} />
+          <ChatPanel courseId={course.id} courseTitle={course.title} initialChats={chats} initialChatId={initialChatId} keywords={course.keywords ?? []} />
         </TabsContent>
         <TabsContent value="flashcards" keepMounted>
           <FlashcardsPanel courseId={course.id} initialCards={flashcards} now={now} />

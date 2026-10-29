@@ -49,6 +49,7 @@ async function CourseContent({ params, searchParams }: { params: PageProps<"/app
 
   const tabParam = typeof sp.tab === "string" ? sp.tab : "overview";
   const initialTab = (["overview", "summaries", "audio", "quiz", "chat", "flashcards"].includes(tabParam) ? tabParam : "overview") as WorkspaceTab;
+  const initialChatId = typeof sp.chat === "string" && (chats ?? []).some((c) => c.id === sp.chat) ? sp.chat : null;
 
   return (
     <CourseWorkspace
@@ -77,6 +78,7 @@ async function CourseContent({ params, searchParams }: { params: PageProps<"/app
       tts={ttsConfigured()}
       ttsMaxChars={ttsMaxChars()}
       initialTab={initialTab}
+      initialChatId={initialChatId}
     />
   );
 }

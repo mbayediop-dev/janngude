@@ -9,7 +9,7 @@ Espace de révision pour étudiants : déposez un cours (PDF, Word, PowerPoint, 
 - des **cartes mémoire** à répétition espacée (révisions du jour) ;
 - une **discussion** avec un assistant qui connaît le cours ;
 - une **recherche globale** dans le contenu de tous les cours ;
-- le **partage** de tout cela, y compris d’un **cours complet** (lien public, WhatsApp, PDF, MP3, ajout direct dans l’espace d’un autre étudiant), consultable **avec ou sans compte**, et des **groupes de classe** (code d’invitation, contenus partagés, classement des quiz) ;
+- le **partage** de tout cela, y compris d’un **cours complet** (lien public, WhatsApp, PDF, MP3, ajout direct dans l’espace d’un autre étudiant), consultable **avec ou sans compte**, des **groupes de classe** (code d’invitation, partage de contenus depuis la page du groupe, classement des quiz), et la **reprise d’une discussion partagée** dans son espace pour poser ses propres questions à l’assistant ;
 - un **espace administrateur** (`/admin`) : statistiques, consommation IA et voix, quota ElevenLabs, gestion des comptes.
 
 ## Pile technique
@@ -50,6 +50,14 @@ Espace de révision pour étudiants : déposez un cours (PDF, Word, PowerPoint, 
    ```bash
    npm run dev
    ```
+
+## Déploiement sur Vercel
+
+1. **Importer le dépôt** sur [vercel.com/new](https://vercel.com/new) (GitHub `mbayediop-dev/janngude`, framework détecté : Next.js, aucune commande à changer).
+2. **Variables d’environnement** (Settings → Environment Variables, pour Production et Preview) : toutes celles de `.env.example` sauf `NEXT_PUBLIC_APP_URL`, déduite automatiquement du domaine Vercel. Obligatoires : `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `ANTHROPIC_API_KEY`, `NEXT_ILEVENLABS_KEY`, `SUPABASE_SECRET_KEY` ; e-mails : `RESEND_API_KEY` + `EMAIL_FROM` (domaine vérifié chez Resend) ou `SMTP_*`.
+3. **Supabase → Authentication → URL Configuration** : *Site URL* = `https://<projet>.vercel.app`, *Redirect URLs* : `https://<projet>.vercel.app/auth/**` et `https://*-<équipe>.vercel.app/auth/**` pour les déploiements de prévisualisation.
+4. **Limites à connaître** : les fonctions durent au plus 300 s (narration + synthèse d’un cours de 20 000 caractères tient dans ce délai) ; les fichiers de cours et les échantillons de voix sont envoyés directement à Supabase Storage par le navigateur, jamais via les fonctions (limite Vercel de 4,5 Mo par requête). L’offre Hobby de Vercel est réservée à un usage non commercial : passez en Pro avant d’ouvrir des abonnements payants.
+5. Chaque `git push` sur `main` redéploie la production ; les autres branches créent une prévisualisation.
 
 ## Commandes
 

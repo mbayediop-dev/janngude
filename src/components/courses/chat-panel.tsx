@@ -15,9 +15,10 @@ import type { ChatRow, ChatMessageRow } from "@/lib/supabase/types";
 type Msg = Pick<ChatMessageRow, "id" | "role" | "content">;
 type DoneEvent = { chat: ChatRow; userMessage: ChatMessageRow; assistantMessage: ChatMessageRow };
 
-export function ChatPanel({ courseId, courseTitle, initialChats, keywords }: { courseId: string; courseTitle: string; initialChats: ChatRow[]; keywords: string[] }) {
+export function ChatPanel({ courseId, courseTitle, initialChats, initialChatId = null, keywords }: { courseId: string; courseTitle: string; initialChats: ChatRow[]; initialChatId?: string | null; keywords: string[] }) {
   const [chats, setChats] = useState(initialChats);
-  const [activeId, setActiveId] = useState<string | null>(initialChats[0]?.id ?? null);
+  // Discussion ouverte au départ : celle demandée par l’URL (reprise d’un partage), sinon la plus récente.
+  const [activeId, setActiveId] = useState<string | null>(initialChatId && initialChats.some((c) => c.id === initialChatId) ? initialChatId : (initialChats[0]?.id ?? null));
   // Messages chargés pour une discussion donnée (null = nouvelle discussion).
   const [store, setStore] = useState<{ chatId: string | null; messages: Msg[] }>({ chatId: null, messages: [] });
   const [input, setInput] = useState("");

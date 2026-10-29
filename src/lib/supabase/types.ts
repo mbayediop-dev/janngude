@@ -72,6 +72,7 @@ export type CourseRow = {
   key_points: KeyPoint[] | null;
   keywords: string[] | null;
   word_count: number | null;
+  copied_from: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -128,6 +129,7 @@ export type ChatRow = {
   course_id: string;
   user_id: string;
   title: string;
+  copied_from: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -223,13 +225,13 @@ export type Database = {
       courses: Table<
         CourseRow,
         | "id" | "file_path" | "file_name" | "file_type" | "file_size" | "status" | "error_message" | "content_text"
-        | "overview" | "outline" | "key_points" | "keywords" | "word_count" | "created_at" | "updated_at"
+        | "overview" | "outline" | "key_points" | "keywords" | "word_count" | "copied_from" | "created_at" | "updated_at"
       >;
       summaries: Table<SummaryRow, "id" | "length" | "created_at">;
       quizzes: Table<QuizRow, "id" | "difficulty" | "created_at">;
       quiz_attempts: Table<QuizAttemptRow, "id" | "user_id" | "guest_name" | "via_share" | "created_at">;
       audio_readings: Table<AudioReadingRow, "id" | "summary_id" | "voice_kind" | "voice_label" | "duration_seconds" | "char_count" | "created_at">;
-      chats: Table<ChatRow, "id" | "title" | "created_at" | "updated_at">;
+      chats: Table<ChatRow, "id" | "title" | "copied_from" | "created_at" | "updated_at">;
       chat_messages: Table<ChatMessageRow, "id" | "created_at">;
       shares: Table<ShareRow, "id" | "token" | "recipient_email" | "group_id" | "view_count" | "expires_at" | "created_at">;
       share_recipients: Table<ShareRecipientRow, "saved_at">;
@@ -252,6 +254,7 @@ export type Database = {
       admin_users: { Args: { p_query?: string | null; p_limit?: number }; Returns: AdminUser[] };
       admin_set_role: { Args: { p_user: string; p_role: string }; Returns: undefined };
       search_students: { Args: { p_query: string; p_limit?: number }; Returns: StudentMatch[] };
+      continue_shared_chat: { Args: { p_token: string }; Returns: Json };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

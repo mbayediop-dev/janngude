@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { BookmarkPlus, Check, Copy, Download, MessageCircle, FileText, ListChecks, Headphones, MessagesSquare, Sparkles, UserRound, Play, BookOpen, FolderInput, Lightbulb } from "lucide-react";
+import { BookmarkPlus, Check, Copy, Download, MessageCircle, FileText, ListChecks, Headphones, MessagesSquare, Sparkles, UserRound, Play, BookOpen, FolderInput, Lightbulb, MessageSquarePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Markdown } from "@/components/ui/markdown";
@@ -26,7 +26,21 @@ export function SharedView({ payload, viewer, url }: { payload: SharePayload; vi
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [copying, setCopying] = useState(false);
+  const [continuing, setContinuing] = useState(false);
   const [playerOpen, setPlayerOpen] = useState(false);
+
+  /** Reprend la discussion partagée dans son espace pour poser ses propres questions à l’assistant. */
+  async function continueChat() {
+    setContinuing(true);
+    try {
+      const r = await apiJson<{ courseId: string; chatId: string; created: boolean }>(`/api/shares/${share.token}/continue`, { method: "POST" });
+      toast.success(r.created ? "Discussion copiée dans votre espace : posez votre question à l’assistant." : "Vous reprenez cette discussion dans votre espace.");
+      router.push(`/app/courses/${r.courseId}?tab=chat&chat=${r.chatId}`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erreur");
+      setContinuing(false);
+    }
+  }
 
   async function copyCourse() {
     setCopying(true);
@@ -235,6 +249,31 @@ export function SharedView({ payload, viewer, url }: { payload: SharePayload; vi
                 <Markdown content={m.content} className="prose-sm min-w-0" />
               </div>
             ),
+          )}
+        </div>
+      ) : null}
+
+      {share.type === "chat" ? (
+        <div className="flex flex-col gap-4 rounded-[28px] bg-mint/60 p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/80 text-ink">
+              <MessageSquarePlus className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-[16px] font-semibold text-ink">Une question sur ce cours ?</p>
+              <p className="mt-0.5 text-sm text-ink-2/80">Reprenez cette discussion dans votre espace : l’assistant connaît le cours et répond à vos propres questions.</p>
+            </div>
+          </div>
+          {viewer ? (
+            <Button onClick={continueChat} loading={continuing} className="shrink-0">
+              <Sparkles className="h-4 w-4" /> Poser une question
+            </Button>
+          ) : (
+            <Button asChild className="shrink-0">
+              <Link href={`/signup?next=${encodeURIComponent(`/s/${share.token}`)}`}>
+                <Sparkles className="h-4 w-4" /> Créer un compte pour poser une question
+              </Link>
+            </Button>
           )}
         </div>
       ) : null}

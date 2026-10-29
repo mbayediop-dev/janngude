@@ -11,6 +11,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Field, Input } from "@/components/ui/input";
 import { Avatar } from "@/components/ui/misc";
 import { SharedCard } from "@/components/share/shared-card";
+import { ShareToGroupDialog } from "@/components/groups/share-to-group-dialog";
 import { apiJson, copyToClipboard } from "@/lib/client";
 import { whatsappUrl } from "@/lib/share";
 import { groupInviteMessage } from "@/lib/groups";
@@ -93,6 +94,16 @@ export function GroupView({ group, viewerId, members, shares, leaderboard }: { g
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
+          <ShareToGroupDialog
+            groupId={group.id}
+            groupName={group.name}
+            alreadyShared={shares.map((s) => ({ type: s.resource_type, title: s.title }))}
+            trigger={
+              <Button>
+                <Share2 className="h-4 w-4" /> Partager un contenu
+              </Button>
+            }
+          />
           {isOwner ? (
             <Button variant="outline" onClick={() => setRenameOpen(true)}>
               <Pencil className="h-4 w-4" /> Renommer
@@ -132,7 +143,19 @@ export function GroupView({ group, viewerId, members, shares, leaderboard }: { g
             <div className="rounded-[28px] border-2 border-dashed border-line-strong px-6 py-12 text-center">
               <Inbox className="mx-auto h-6 w-6 text-muted" />
               <p className="mt-3 text-[15px] font-medium text-ink">Rien n’a encore été partagé ici.</p>
-              <p className="mt-1 text-sm text-muted">Depuis un cours, cliquez sur « Partager » puis choisissez ce groupe : résumés, quiz, lectures audio, discussions ou cours complets.</p>
+              <p className="mt-1 text-sm text-muted">Cliquez sur « Partager un contenu » pour choisir dans votre bibliothèque : cours complets, résumés, quiz, lectures audio ou discussions avec l’assistant.</p>
+              <div className="mt-5">
+                <ShareToGroupDialog
+                  groupId={group.id}
+                  groupName={group.name}
+                  alreadyShared={[]}
+                  trigger={
+                    <Button variant="secondary">
+                      <Share2 className="h-4 w-4" /> Partager un contenu
+                    </Button>
+                  }
+                />
+              </div>
             </div>
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 2xl:grid-cols-3">
