@@ -56,6 +56,7 @@ function describeAuthError(error: { message: string; code?: string }) {
 const LINK_ERRORS: Record<string, string> = {
   lien_invalide: "Ce lien est invalide ou a expiré. Connectez-vous ou demandez un nouveau lien.",
   lien_reinitialisation_invalide: "Ce lien de réinitialisation est invalide ou a expiré. Demandez-en un nouveau via « Mot de passe oublié ? ».",
+  session_admin: "La session d’administration a expiré. Reconnectez-vous avec votre compte administrateur.",
 };
 
 export function LoginForm() {

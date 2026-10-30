@@ -24,6 +24,14 @@ export async function requireApiUser() {
   return { supabase, user };
 }
 
+/** Comme requireApiUser, mais exige le rôle administrateur (fonction SQL is_admin), sinon 403. */
+export async function requireApiAdmin() {
+  const ctx = await requireApiUser();
+  const { data: isAdmin } = await ctx.supabase.rpc("is_admin");
+  if (!isAdmin) throw new ApiError("Réservé aux administrateurs.", 403);
+  return ctx;
+}
+
 function isNextInternalError(error: unknown) {
   return typeof error === "object" && error !== null && "digest" in error && String((error as { digest?: unknown }).digest).startsWith("NEXT_");
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Search, ShieldCheck, ShieldOff, Trash2 } from "lucide-react";
+import { LogIn, Search, ShieldCheck, ShieldOff, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/misc";
 import { apiJson } from "@/lib/client";
@@ -11,7 +11,7 @@ import { formatDate } from "@/lib/utils";
 import { formatPhone } from "@/lib/phone";
 import type { AdminUser } from "@/lib/supabase/types";
 
-export function UsersTable({ users, query, selfId, canDelete }: { users: AdminUser[]; query: string; selfId: string; canDelete: boolean }) {
+export function UsersTable({ users, query, selfId, canDelete, canImpersonate }: { users: AdminUser[]; query: string; selfId: string; canDelete: boolean; canImpersonate: boolean }) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -25,6 +25,19 @@ export function UsersTable({ users, query, selfId, canDelete }: { users: AdminUs
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Erreur");
     } finally {
+      setBusy(null);
+    }
+  }
+
+  /** Ouvre l’espace de l’étudiant dans ce navigateur ; la page entière est rechargée avec sa session. */
+  async function enter(u: AdminUser) {
+    if (!confirm(`Ouvrir l’espace de ${u.name} (${u.email}) ?\n\nVous verrez et pourrez modifier ses contenus comme si vous étiez cette personne. Un bandeau vous permettra de revenir à votre compte.`)) return;
+    setBusy(u.id);
+    try {
+      const { redirect } = await apiJson<{ redirect: string }>(`/api/admin/users/${u.id}/impersonate`, { method: "POST" });
+      window.location.assign(redirect);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erreur");
       setBusy(null);
     }
   }
@@ -105,6 +118,9 @@ export function UsersTable({ users, query, selfId, canDelete }: { users: AdminUs
                   <td className="px-3 py-3 text-right tabular-nums">{u.ai_chars.toLocaleString("fr-FR")}</td>
                   <td className="px-5 py-3">
                     <span className="flex justify-end gap-1">
+                      <button type="button" disabled={busy === u.id || u.id === selfId || !canImpersonate} onClick={() => enter(u)} className="rounded-full p-2 text-muted hover:bg-mint hover:text-ink disabled:opacity-40" title={canImpersonate ? "Se connecter à ce compte" : "Définissez SUPABASE_SECRET_KEY pour ouvrir un compte"}>
+                        <LogIn className="h-4 w-4" />
+                      </button>
                       {u.role === "admin" ? (
                         <button type="button" disabled={busy === u.id || u.id === selfId} onClick={() => setRole(u, "student")} className="rounded-full p-2 text-muted hover:bg-surface-2 hover:text-ink disabled:opacity-40" title="Retirer les droits d’administration">
                           <ShieldOff className="h-4 w-4" />
@@ -125,7 +141,7 @@ export function UsersTable({ users, query, selfId, canDelete }: { users: AdminUs
           </tbody>
         </table>
       </div>
-      {!canDelete ? <p className="text-[12px] text-muted">La suppression de comptes nécessite la variable SUPABASE_SECRET_KEY côté serveur.</p> : null}
+      {!canDelete ? <p className="text-[12px] text-muted">La suppression de comptes et la connexion à un compte nécessitent la variable SUPABASE_SECRET_KEY côté serveur.</p> : null}
     </div>
   );
 }

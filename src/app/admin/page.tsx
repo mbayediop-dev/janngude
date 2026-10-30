@@ -27,6 +27,7 @@ const USAGE_LABEL: Record<string, string> = {
   tts_chars: "Synthèse vocale ElevenLabs (caractères)",
   import_youtube: "Imports YouTube",
   course_copied: "Cours copiés depuis un partage",
+  admin_impersonation: "Connexions d’un administrateur à un compte",
 };
 
 export default function AdminPage({ searchParams }: PageProps<"/admin">) {
@@ -153,7 +154,7 @@ async function AdminContent({ searchParams }: { searchParams: PageProps<"/admin"
         <h2 className="mb-4 flex items-center gap-2 text-[24px] font-semibold tracking-tight text-ink">
           <Users className="h-5 w-5" /> Comptes
         </h2>
-        <UsersTable users={(users ?? []) as AdminUser[]} query={q} selfId={admin.id} canDelete={adminConfigured()} />
+        <UsersTable users={(users ?? []) as AdminUser[]} query={q} selfId={admin.id} canDelete={adminConfigured()} canImpersonate={adminConfigured()} />
       </section>
     </div>
   );

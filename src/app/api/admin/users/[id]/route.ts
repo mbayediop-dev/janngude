@@ -1,18 +1,11 @@
-import { handleApiError, jsonError, readJsonBody, requireApiUser, ApiError } from "@/lib/api";
+import { handleApiError, jsonError, readJsonBody, requireApiAdmin, ApiError } from "@/lib/api";
 import { adminConfigured, createAdminClient } from "@/lib/supabase/admin";
-
-async function requireAdminApi() {
-  const ctx = await requireApiUser();
-  const { data: isAdmin } = await ctx.supabase.rpc("is_admin");
-  if (!isAdmin) throw new ApiError("Réservé aux administrateurs.", 403);
-  return ctx;
-}
 
 /** Change le rôle d’un utilisateur (student | admin). */
 export async function PATCH(req: Request, ctx: RouteContext<"/api/admin/users/[id]">) {
   try {
     const { id } = await ctx.params;
-    const { supabase, user } = await requireAdminApi();
+    const { supabase, user } = await requireApiAdmin();
     const body = await readJsonBody<{ role?: string }>(req);
     if (body.role !== "student" && body.role !== "admin") throw new ApiError("Rôle invalide.");
     if (id === user.id && body.role !== "admin") throw new ApiError("Vous ne pouvez pas retirer votre propre rôle d’administrateur.");
@@ -28,7 +21,7 @@ export async function PATCH(req: Request, ctx: RouteContext<"/api/admin/users/[i
 export async function DELETE(_req: Request, ctx: RouteContext<"/api/admin/users/[id]">) {
   try {
     const { id } = await ctx.params;
-    const { user } = await requireAdminApi();
+    const { user } = await requireApiAdmin();
     if (id === user.id) throw new ApiError("Vous ne pouvez pas supprimer votre propre compte depuis l’administration.");
     if (!adminConfigured()) return jsonError("Suppression indisponible : définissez SUPABASE_SECRET_KEY.", 503);
     const admin = createAdminClient();
